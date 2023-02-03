@@ -1,0 +1,93 @@
+{
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist"
+  },
+  "package": {
+    "productName": "dayscout",
+    "version": "0.0.0"
+  },
+  "tauri": {
+    "systemTray": {
+      "iconPath": "icons/128x128.png",
+      "iconAsTemplate": true
+    },
+    "allowlist": {
+      "all": true,
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [
+          "http://**",
+          "https://**"
+        ]
+      }
+    },
+    "bundle": {
+      "active": true,
+      "category": "",
+      "copyright": "Sys0",
+      "deb": {
+        "depends": []
+      },
+      "externalBin": [],
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "identifier": "xyz.naisu.dayscout",
+      "longDescription": "",
+      "macOS": {
+        "entitlements": null,
+        "exceptionDomain": "",
+        "frameworks": [],
+        "providerShortName": null,
+        "signingIdentity": null
+      },
+      "resources": [],
+      "shortDescription": "",
+      "targets": "all",
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
+    },
+    "security": {
+      "csp": null
+    },
+    "updater": {
+      "active": false
+    },
+    "windows": [
+      {
+        "alwaysOnTop": true,
+        "decorations": false,
+        "height": 200,
+        "label": "mini",
+        "resizable": false,
+        "skipTaskbar": true,
+        "title": "dayscout",
+        "transparent": true,
+        "url": "/index.html?a=mini",
+        "width": 200
+      },
+      {
+        "label": "settings",
+        "fullscreen": false,
+        "height": 600,
+        "resizable": true,
+        "title": "dayscout Settings",
+        "width": 800,
+        "transparent": false,
+        "decorations": false,
+        "visible": false
+      }
+    ]
+  }
+}

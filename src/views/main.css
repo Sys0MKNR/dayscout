@@ -1,0 +1,21 @@
+html,
+body,
+#root {
+  background-color: transparent !important;
+}
+
+* {
+  user-select: none;
+}
+
+#drag-root * {
+  pointer-events: none;
+}
+
+#mini-toolbar {
+  pointer-events: auto !important;
+}
+
+#mini-toolbar * {
+  pointer-events: auto !important;
+}

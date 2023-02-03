@@ -1,0 +1,44 @@
+{
+  "name": "dayscout",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "mock": "ts-node-esm --project tsconfig.node.json ./test/mock/mockServer.ts"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^2.9.10",
+    "@tanstack/react-query": "^4.24.3",
+    "@tauri-apps/api": "^1.2.0",
+    "daisyui": "^2.47.0",
+    "dayjs": "^1.11.7",
+    "hsl-to-hex": "^1.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.42.1",
+    "react-toastify": "^9.1.1",
+    "tabler-icons-react": "^1.56.0",
+    "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store",
+    "valtio": "^1.9.0",
+    "zod": "^3.20.2"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.2.2",
+    "@types/hsl-to-hex": "^1.0.0",
+    "@types/node": "^18.7.10",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^3.0.0",
+    "autoprefixer": "^10.4.13",
+    "fastify": "^4.12.0",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.2.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.6.4",
+    "vite": "^4.0.0"
+  }
+}
