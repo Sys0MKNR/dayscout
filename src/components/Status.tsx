@@ -59,13 +59,6 @@ export interface StatusProps {
   fetchInterval?: number;
 }
 
-interface IStatusColor {
-  className: string;
-  style?: {
-    color: string;
-  };
-}
-
 function Status(props: StatusProps) {
   const { appearance } = props;
 
@@ -122,7 +115,7 @@ function Status(props: StatusProps) {
     return <Icon size={props.size}> </Icon>;
   };
 
-  const statusColor: string = (() => {
+  const statusColor = () => {
     switch (status?.state) {
       case "urgent":
         return "text-error";
@@ -133,11 +126,11 @@ function Status(props: StatusProps) {
       default:
         return "text-gray-100";
     }
-  })();
+  };
 
   return (
     <div
-      className={`text-center select-none h-[calc(100%-2rem)] ${statusColor}`}
+      className={`text-center select-none h-[calc(100%-2rem)] ${statusColor()}`}
     >
       <div className="flex w-full">
         <div className="w-8/12">

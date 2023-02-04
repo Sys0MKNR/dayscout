@@ -11,6 +11,7 @@ import { invoke } from "@tauri-apps/api";
 export interface StatusContainerProps extends StatusProps {
   toolbar?: boolean;
   closeBtn?: boolean;
+  quitOnClose?: boolean;
 }
 
 function StatusContainer(props: StatusContainerProps) {
@@ -81,7 +82,13 @@ function StatusContainer(props: StatusContainerProps) {
           {closeBtn && (
             <button
               className="btn btn-ghost btn-sm item text-right"
-              onClick={() => appWindow.hide()}
+              onClick={() => {
+                if (props.quitOnClose) {
+                  appWindow.close();
+                } else {
+                  appWindow.hide();
+                }
+              }}
             >
               <X></X>
             </button>

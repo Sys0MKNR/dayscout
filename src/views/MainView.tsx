@@ -17,17 +17,7 @@ function MainView() {
 function Wrapper() {
   const snap = useSnapshot(state);
 
-  return (
-    <StatusContainer
-      thresholds={snap.settings.thresholds}
-      token={snap.settings.token}
-      url={snap.settings.url}
-      fetchThresholds={snap.settings.fetchThresholds}
-      appearance={snap.settings.appearance}
-      fullScreen={true}
-      fetchInterval={snap.settings.fetchInterval}
-    />
-  );
+  return <StatusContainer fullScreen={true} {...snap.settings} />;
 }
 
 export default MainView;
