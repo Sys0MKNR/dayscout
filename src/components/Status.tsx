@@ -60,11 +60,10 @@ export interface StatusProps {
 }
 
 function Status(props: StatusProps) {
-  const { appearance } = props;
-
   const settingsQuery = useQuery({
     queryKey: ["settings"],
     queryFn: async () => {
+      console.log("settings fetch");
       return props.fetchThresholds
         ? await getSettings({ url: props.url, token: props.token })
         : { thresholds: props.thresholds };
@@ -72,6 +71,8 @@ function Status(props: StatusProps) {
   });
 
   const thresholds = settingsQuery?.data?.thresholds;
+
+  console.log("thresholds", thresholds);
 
   const statusQuery = useQuery({
     queryKey: ["status"],
@@ -83,6 +84,7 @@ function Status(props: StatusProps) {
       }),
     enabled: !!thresholds,
     refetchInterval: props.fetchInterval || 2000,
+    refetchOnMount: true,
     retry: 3,
   });
 

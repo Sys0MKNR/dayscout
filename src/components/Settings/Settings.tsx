@@ -24,6 +24,7 @@ import { useSnapshot } from "valtio";
 import { getFromObj } from "@/lib/utils";
 import SettingsItem from "./SettingsItem";
 import Loader from "@comp/Loader";
+import { useQueryClient } from "@tanstack/react-query";
 interface SettingsGroupProps {
   children: React.ReactNode;
   name: string;

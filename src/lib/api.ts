@@ -26,6 +26,8 @@ export interface IStatus {
 }
 
 export const getStatus = async (args: IGetStatusArgs) => {
+  console.log("status fetch");
+
   const { url, thresholds, token } = args;
 
   const statusURL = new URL(URL_STATUS, url);

@@ -5,6 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { useSnapshot } from "valtio";
 import { state } from "../hooks/useSettings";
 import StatusContainer from "@comp/StatusContainer";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 function MainView() {
   return (
@@ -16,6 +18,14 @@ function MainView() {
 
 function Wrapper() {
   const snap = useSnapshot(state);
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: ["status", "settings"],
+    });
+  }, [snap.settings.url, snap.settings.token]);
 
   return <StatusContainer fullScreen={true} {...snap.settings} />;
 }
