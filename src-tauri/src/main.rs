@@ -27,11 +27,11 @@ fn create_settings_window(app_handle: &AppHandle) -> window::Window {
     window
 }
 
-fn create_mini_window(app_handle: &AppHandle) -> window::Window {
+fn create_main_window(app_handle: &AppHandle) -> window::Window {
     let window = tauri::WindowBuilder::new(
         app_handle,
-        "mini",
-        tauri::WindowUrl::App("index.html?a=mini".into()),
+        "main",
+        tauri::WindowUrl::App("index.html?a=main".into()),
     )
     .fullscreen(false)
     .inner_size(200.0, 200.0)
@@ -58,7 +58,7 @@ fn get_or_create_window(label: &str, app_handle: &AppHandle) -> window::Window {
         None => {
             let window = match label {
                 "settings" => create_settings_window(app_handle),
-                "mini" => create_mini_window(app_handle),
+                "main" => create_main_window(app_handle),
                 _ => panic!("unknown window"),
             };
 

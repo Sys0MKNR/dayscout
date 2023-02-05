@@ -15,7 +15,12 @@
       "iconAsTemplate": true
     },
     "allowlist": {
-      "all": true,
+      "window": {
+        "all": true
+      },
+      "clipboard": {
+        "all": true
+      },
       "http": {
         "all": true,
         "request": true,

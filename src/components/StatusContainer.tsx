@@ -57,7 +57,7 @@ function StatusContainer(props: StatusContainerProps) {
     >
       {toolbar && (
         <div
-          id="mini-toolbar"
+          id="main-toolbar"
           className="h-8 pr-1 card-actions justify-end opacity-0 group-hover:opacity-100 transition-opacity"
         >
           <button
