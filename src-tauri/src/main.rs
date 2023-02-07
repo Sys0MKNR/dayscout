@@ -127,31 +127,36 @@ fn main() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_window_state::Builder::default().build())
+        .plugin(tauri_plugin_positioner::init())
         .invoke_handler(tauri::generate_handler![
             show_or_create_window_cmd,
             toggle_window_cmd
         ])
         .system_tray(system_tray)
-        .on_system_tray_event(|app, event| match event {
-            SystemTrayEvent::LeftClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                show_or_create_window("main", app).expect("main window can't be created");
-            }
-            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "settings" => {
-                    show_or_create_window("settings", app)
-                        .expect("settings window can't be created");
+        .on_system_tray_event(|app, event| {
+            tauri_plugin_positioner::on_tray_event(app, &event);
+
+            match event {
+                SystemTrayEvent::LeftClick {
+                    position: _,
+                    size: _,
+                    ..
+                } => {
+                    show_or_create_window("main", app).expect("main window can't be created");
                 }
-                "exit" => {
-                    app.save_window_state(StateFlags::all()).unwrap();
-                    std::process::exit(0);
-                }
+                SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+                    "settings" => {
+                        show_or_create_window("settings", app)
+                            .expect("settings window can't be created");
+                    }
+                    "exit" => {
+                        app.save_window_state(StateFlags::all()).unwrap();
+                        std::process::exit(0);
+                    }
+                    _ => {}
+                },
                 _ => {}
-            },
-            _ => {}
+            }
         })
         .build(tauri::generate_context!())
         .expect("error while building tauri application");

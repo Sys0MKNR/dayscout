@@ -19,6 +19,7 @@ import {
   updateSettings,
   state,
   Themes,
+  Positions,
 } from "@/hooks/useSettings";
 import { useSnapshot } from "valtio";
 import { getFromObj } from "@/lib/utils";
@@ -83,6 +84,27 @@ function createSettingsOptions(): ISettingsGroup[] {
           type: "select",
           width: "w-fit",
           children: Themes.map((t) => <option key={t}>{t}</option>),
+        },
+
+        {
+          name: "appearance.displayOnly",
+          label: "Display Only",
+          placeholder: "",
+          type: "checkbox",
+          width: "w-fit",
+        },
+
+        {
+          name: "appearance.position",
+          label: "Position",
+          placeholder: "Select Position",
+          type: "select",
+          width: "w-fit",
+          children: Positions.map((p) => (
+            <option value={p[0]} key={p[0]}>
+              {p[1]}
+            </option>
+          )),
         },
 
         {

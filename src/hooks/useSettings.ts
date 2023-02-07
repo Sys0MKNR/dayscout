@@ -6,6 +6,8 @@ import { proxy } from "valtio";
 import { NestedKeyOf, Subset, wait } from "@/lib/utils";
 import { ReactNode } from "react";
 
+import { Position } from "tauri-plugin-positioner-api";
+
 export const Themes: Readonly<[string, ...string[]]> = [
   "acid",
   "aqua",
@@ -38,6 +40,10 @@ export const Themes: Readonly<[string, ...string[]]> = [
   "wireframe",
 ];
 
+const _Positions = Object.entries(Position);
+
+export const Positions = _Positions.slice(0, 9);
+
 const HexColorSchema = z
   .string()
   .min(4)
@@ -57,6 +63,8 @@ export const SettingsSchema = z.object({
       backgroundTransparency: z.coerce.number().min(0).max(100).default(100),
       background: HexColorSchema.default("#000000"),
       themeBackground: z.coerce.boolean().default(true),
+      displayOnly: z.coerce.boolean().default(true),
+      position: z.coerce.number().default(0),
     })
     .default({}),
 

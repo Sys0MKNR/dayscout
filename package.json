@@ -22,6 +22,7 @@
     "react-hook-form": "^7.42.1",
     "react-toastify": "^9.1.1",
     "tabler-icons-react": "^1.56.0",
+    "tauri-plugin-positioner-api": "github:tauri-apps/tauri-plugin-positioner",
     "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store",
     "valtio": "^1.9.0",
     "zod": "^3.20.2"

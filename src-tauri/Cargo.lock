@@ -476,6 +476,7 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-build",
+ "tauri-plugin-positioner",
  "tauri-plugin-store",
  "tauri-plugin-window-state",
  "thiserror",
@@ -2592,6 +2593,19 @@ dependencies = [
  "syn",
  "tauri-codegen",
  "tauri-utils",
+]
+
+[[package]]
+name = "tauri-plugin-positioner"
+version = "0.2.7"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=dev#bf1106a0a5e178ce38ecde56751ba037307a7ae8"
+dependencies = [
+ "log",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "tauri",
+ "thiserror",
 ]
 
 [[package]]
