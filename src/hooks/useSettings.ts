@@ -65,6 +65,8 @@ export const SettingsSchema = z.object({
       themeBackground: z.coerce.boolean().default(true),
       displayOnly: z.coerce.boolean().default(true),
       position: z.coerce.number().default(0),
+      width: z.coerce.number().default(200),
+      height: z.coerce.number().default(200),
     })
     .default({}),
 

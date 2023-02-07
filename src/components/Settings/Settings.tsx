@@ -95,6 +95,28 @@ function createSettingsOptions(): ISettingsGroup[] {
         },
 
         {
+          name: "appearance.width",
+          label: "Width",
+          placeholder: "#",
+          type: "number",
+          width: "w-32",
+          customProps: {
+            min: 0,
+          },
+        },
+
+        {
+          name: "appearance.height",
+          label: "Height",
+          placeholder: "#",
+          type: "number",
+          width: "w-32",
+          customProps: {
+            min: 0,
+          },
+        },
+
+        {
           name: "appearance.position",
           label: "Position",
           placeholder: "Select Position",

@@ -11,7 +11,13 @@ const DefaultInputElement = (
 ) => {
   const { register } = useFormContext();
 
-  return <input {...props} {...register(props.name as any)} />;
+  return (
+    <input
+      {...props}
+      {...register(props.name as any)}
+      // className="input input-md"
+    />
+  );
 };
 
 const CheckBoxInputElement = (
@@ -75,7 +81,7 @@ const ColorInputElement = (
     <input
       {...props}
       {...register(props.name as any)}
-      className="btn btn-xs"
+      className="btn btn-sm"
       type="color"
     />
   );

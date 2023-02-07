@@ -7,7 +7,7 @@ import { Positions, state } from "../hooks/useSettings";
 import StatusContainer from "@comp/StatusContainer";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { appWindow } from "@tauri-apps/api/window";
+import { appWindow, LogicalSize, PhysicalSize } from "@tauri-apps/api/window";
 
 import { moveWindow } from "tauri-plugin-positioner-api";
 
@@ -24,14 +24,24 @@ function Wrapper() {
 
   const queryClient = useQueryClient();
 
+  const updateWindow = async () => {
+    await appWindow.setIgnoreCursorEvents(snap.settings.appearance.displayOnly);
+
+    await moveWindow(snap.settings.appearance.position);
+
+    await appWindow.setSize(
+      new LogicalSize(
+        snap.settings.appearance.width,
+        snap.settings.appearance.height
+      )
+    );
+  };
+
   useEffect(() => {
     queryClient.invalidateQueries({
       queryKey: ["status", "settings"],
     });
-
-    appWindow.setIgnoreCursorEvents(snap.settings.appearance.displayOnly);
-
-    moveWindow(snap.settings.appearance.position);
+    updateWindow();
   }, [snap.settings]);
 
   // useEffect(() => {
