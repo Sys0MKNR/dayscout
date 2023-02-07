@@ -25,7 +25,9 @@ function Wrapper() {
   const queryClient = useQueryClient();
 
   const updateWindow = async () => {
-    await appWindow.setIgnoreCursorEvents(snap.settings.appearance.displayOnly);
+    await appWindow.setIgnoreCursorEvents(
+      snap.settings.appearance.nonInteractive
+    );
 
     await moveWindow(snap.settings.appearance.position);
 
@@ -44,11 +46,7 @@ function Wrapper() {
     updateWindow();
   }, [snap.settings]);
 
-  // useEffect(() => {
-
-  // }, [snap.settings.url, snap.settings.token]);
-
-  return <StatusContainer fullScreen={true} {...snap.settings} />;
+  return <StatusContainer {...snap.settings} />;
 }
 
 export default MainView;

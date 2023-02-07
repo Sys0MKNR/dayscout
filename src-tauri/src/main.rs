@@ -93,6 +93,8 @@ fn toggle_window(label: &str, app_handle: &AppHandle) -> Result<(), Error> {
 
     let visible = window.is_visible()?;
 
+    println!("toggle_window: {} {}", label, visible);
+
     if visible {
         window.hide()?;
     } else {

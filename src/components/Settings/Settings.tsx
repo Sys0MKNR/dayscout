@@ -87,7 +87,7 @@ function createSettingsOptions(): ISettingsGroup[] {
         },
 
         {
-          name: "appearance.displayOnly",
+          name: "appearance.nonInteractive",
           label: "Display Only",
           placeholder: "",
           type: "checkbox",
@@ -132,6 +132,21 @@ function createSettingsOptions(): ISettingsGroup[] {
         {
           name: "appearance.themeBackground",
           label: "Use Theme Background",
+          placeholder: "",
+          type: "checkbox",
+          width: "w-fit",
+        },
+
+        {
+          name: "appearance.showDelta",
+          label: "Show Delta",
+          placeholder: "",
+          type: "checkbox",
+          width: "w-fit",
+        },
+        {
+          name: "appearance.showLastUpdated",
+          label: "Show Last Updated",
           placeholder: "",
           type: "checkbox",
           width: "w-fit",

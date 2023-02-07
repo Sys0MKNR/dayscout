@@ -19,8 +19,12 @@ function StatusContainer(props: StatusContainerProps) {
 
   const queryClient = useQueryClient();
 
-  const { background, backgroundTransparency, themeBackground, displayOnly } =
-    props.appearance;
+  const {
+    background,
+    backgroundTransparency,
+    themeBackground,
+    nonInteractive,
+  } = props.appearance;
 
   const bg = useMemo(() => {
     console.log(props.appearance);
@@ -55,7 +59,7 @@ function StatusContainer(props: StatusContainerProps) {
       }}
       className="card h-full card-compact bg-base-100 group px-2"
     >
-      {toolbar && !displayOnly && (
+      {toolbar && !nonInteractive && (
         <div
           id="main-toolbar"
           className="h-8 pr-1 card-actions justify-end opacity-0 group-hover:opacity-100 transition-opacity"

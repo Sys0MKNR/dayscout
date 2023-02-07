@@ -63,10 +63,12 @@ export const SettingsSchema = z.object({
       backgroundTransparency: z.coerce.number().min(0).max(100).default(100),
       background: HexColorSchema.default("#000000"),
       themeBackground: z.coerce.boolean().default(true),
-      displayOnly: z.coerce.boolean().default(true),
+      nonInteractive: z.coerce.boolean().default(true),
       position: z.coerce.number().default(0),
       width: z.coerce.number().default(200),
       height: z.coerce.number().default(200),
+      showDelta: z.coerce.boolean().default(true),
+      showLastUpdated: z.coerce.boolean().default(true),
     })
     .default({}),
 

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import {
   ArrowDown,
   ArrowDownRight,
@@ -51,13 +51,22 @@ const textSizesFullScreen = {
 
 export interface StatusProps {
   appearance: ISettingsSchema["appearance"];
-  fullScreen?: boolean;
   url: string;
   token: string;
   thresholds: ISettingsSchema["thresholds"];
   fetchThresholds?: boolean;
   fetchInterval?: number;
 }
+
+const DirectionIcon = (props: { direction: string; size: number }) => {
+  const Icon = directionMap[props.direction];
+
+  if (!Icon) {
+    return null;
+  }
+
+  return <Icon size={props.size}> </Icon>;
+};
 
 function Status(props: StatusProps) {
   const settingsQuery = useQuery({
@@ -72,7 +81,7 @@ function Status(props: StatusProps) {
 
   const thresholds = settingsQuery?.data?.thresholds;
 
-  console.log("thresholds", thresholds);
+  const { width, height, showDelta, showLastUpdated } = props.appearance;
 
   const statusQuery = useQuery({
     queryKey: ["status"],
@@ -88,9 +97,32 @@ function Status(props: StatusProps) {
     retry: 3,
   });
 
-  const status = statusQuery.data;
+  const textSize = useMemo(() => {
+    // status
 
-  const statusTextRef = useRef<HTMLHeadingElement>(null);
+    let main = height * 0.4;
+
+    let scale = 1;
+
+    if (main * 4 >= width) {
+      main = width / 4;
+      scale = main / (height * 0.4);
+    }
+
+    // delta
+    const delta = height * 0.25 * scale;
+
+    // last updated
+    const lastUpdated = height * 0.15 * scale;
+
+    return {
+      main,
+      delta,
+      lastUpdated,
+    };
+  }, [props.appearance.width, props.appearance.height]);
+
+  const status = statusQuery.data;
 
   const isLoading = settingsQuery.isLoading || statusQuery.isLoading;
   const isError = settingsQuery.isError || statusQuery.isError;
@@ -105,18 +137,6 @@ function Status(props: StatusProps) {
     return <Loader />;
   }
 
-  const textSizes = props.fullScreen ? textSizesFullScreen : textSizesDefault;
-
-  const DirectionIcon = (props: { direction: string; size: number }) => {
-    const Icon = directionMap[props.direction];
-
-    if (!Icon) {
-      return null;
-    }
-
-    return <Icon size={props.size}> </Icon>;
-  };
-
   const statusColor = () => {
     switch (status?.state) {
       case "urgent":
@@ -130,35 +150,41 @@ function Status(props: StatusProps) {
     }
   };
 
+  //  h-[calc(100%-2rem)]
+
   return (
     <div
-      className={`text-center select-none h-[calc(100%-2rem)] ${statusColor()}`}
+      className={`flex flex-col text-center select-none h-full overflow-hidden ${statusColor()}`}
     >
-      <div className="flex w-full">
-        <div className="w-8/12">
-          <h1
-            ref={statusTextRef}
-            className={`${textSizes.main} font-extrabold`}
-          >
+      <div className="flex w-full flex-grow">
+        <div className="w-8/12 flex justify-center items-center">
+          <h1 style={{ fontSize: textSize.main }} className="font-extrabold">
             {status.value}
           </h1>
         </div>
         <div className="w-4/12 flex justify-center items-center">
           {status.direction && (
-            <DirectionIcon size={96} direction={status.direction} />
+            <DirectionIcon size={textSize.main} direction={status.direction} />
           )}
         </div>
       </div>
 
-      {status.delta && (
-        <div className={`${textSizes.delta} card-normal font-bold`}>
-          <span>{status.deltaText}</span>
+      {status.delta && showDelta && (
+        <div className="font-bold">
+          <span style={{ fontSize: textSize.delta }}>{status.deltaText}</span>
         </div>
       )}
 
-      <div className={`${textSizes.lastUpdated} card-normal`}>
-        <span>{status.lastUpdatedText}</span>
-      </div>
+      {showLastUpdated && (
+        <div className="">
+          <span
+            style={{ fontSize: textSize.lastUpdated }}
+            className="text-ellipsis"
+          >
+            {status.lastUpdatedText}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
