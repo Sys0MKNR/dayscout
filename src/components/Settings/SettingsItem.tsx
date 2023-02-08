@@ -15,7 +15,7 @@ const DefaultInputElement = (
     <input
       {...props}
       {...register(props.name as any)}
-      // className="input input-md"
+      className="input input-bordered input-sm w-full"
     />
   );
 };
@@ -52,14 +52,15 @@ const PasswordInputElement = (
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="input-group">
+    <div className="input-group w-full input-group-sm">
       <input
         {...props}
         {...register(props.name as any)}
         type={showPassword ? "text" : "password"}
+        className="input input-bordered w-full input-sm"
       />
       <button
-        className="btn btn-square swap"
+        className="btn btn-square swap btn-sm"
         type="button"
         onClick={() => setShowPassword((p) => !p)}
       >
@@ -107,6 +108,24 @@ const SelectInputElement = (
   );
 };
 
+const RangeInputElement = (
+  props: DetailedHTMLProps<
+    InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  >
+) => {
+  const { register } = useFormContext();
+
+  return (
+    <input
+      {...props}
+      {...register(props.name as any)}
+      className="range range-sm"
+      type="range"
+    />
+  );
+};
+
 function getInputElement(type: string) {
   switch (type) {
     case "password":
@@ -117,6 +136,8 @@ function getInputElement(type: string) {
       return ColorInputElement;
     case "select":
       return SelectInputElement;
+    case "range":
+      return RangeInputElement;
     default:
       return DefaultInputElement;
   }
@@ -149,7 +170,6 @@ const SettingsItem = (props: SettingsItemProps) => {
       <Input
         name={name}
         type={type}
-        className="input input-bordered w-full"
         placeholder={placeholder || name}
         defaultValue={value}
         children={children}

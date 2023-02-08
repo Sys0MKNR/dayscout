@@ -96,6 +96,8 @@ export const getSettings = async (args: IGetSettingsArgs) => {
 
   const data: any = res.data;
 
+  console.log(data);
+
   const thresholds = data.settings.thresholds;
 
   const settings: INSSettings = {

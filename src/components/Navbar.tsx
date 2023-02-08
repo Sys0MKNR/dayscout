@@ -1,11 +1,14 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { appWindow } from "@tauri-apps/api/window";
-import { X } from "tabler-icons-react";
+import { Refresh, X } from "tabler-icons-react";
 
 export interface NavbarProps {
   fullscreen?: boolean;
 }
 
 function Navbar(props: NavbarProps) {
+  const queryClient = useQueryClient();
+
   return (
     <header
       data-tauri-drag-region
@@ -15,11 +18,17 @@ function Navbar(props: NavbarProps) {
         <a className="btn btn-ghost normal-case text-xl">Dayscout</a>
       </div>
       <div className="flex">
+        {/* <button
+          className="btn btn-square btn-ghost"
+          onClick={() => queryClient.invalidateQueries()}
+        >
+          <Refresh />
+        </button> */}
         <button
           className="btn btn-square btn-ghost"
           onClick={() => appWindow.hide()}
         >
-          <X></X>
+          <X />
         </button>
       </div>
     </header>

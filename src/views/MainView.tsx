@@ -29,14 +29,14 @@ function Wrapper() {
       snap.settings.appearance.nonInteractive
     );
 
-    await moveWindow(snap.settings.appearance.position);
-
     await appWindow.setSize(
       new LogicalSize(
         snap.settings.appearance.width,
         snap.settings.appearance.height
       )
     );
+
+    await moveWindow(snap.settings.appearance.position);
   };
 
   useEffect(() => {

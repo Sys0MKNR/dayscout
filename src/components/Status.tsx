@@ -9,6 +9,7 @@ import {
   ArrowUpRight,
   ChevronsDown,
   ChevronsUp,
+  Error404,
   Icon as IIcon,
   Minus,
   X,
@@ -69,6 +70,8 @@ const DirectionIcon = (props: { direction: string; size: number }) => {
 };
 
 function Status(props: StatusProps) {
+  const retryTimer = useRef<number | null>(null);
+
   const settingsQuery = useQuery({
     queryKey: ["settings"],
     queryFn: async () => {
@@ -79,9 +82,15 @@ function Status(props: StatusProps) {
     },
   });
 
-  const thresholds = settingsQuery?.data?.thresholds;
+  const {
+    width,
+    height: fullHeight,
+    showDelta,
+    showLastUpdated,
+    showDirection,
+  } = props.appearance;
 
-  const { width, height, showDelta, showLastUpdated } = props.appearance;
+  const height = toolbar ? fullHeight - 32 : fullHeight;
 
   const statusQuery = useQuery({
     queryKey: ["status"],
@@ -89,12 +98,26 @@ function Status(props: StatusProps) {
       getStatus({
         url: props.url,
         token: props.token,
-        thresholds: thresholds as any,
+        thresholds: settingsQuery?.data?.thresholds as any,
       }),
-    enabled: !!thresholds,
-    refetchInterval: props.fetchInterval || 2000,
-    refetchOnMount: true,
-    retry: 3,
+    enabled: !!settingsQuery?.data?.thresholds && !settingsQuery.isError,
+    refetchInterval: (data, query) => {
+      console.log({ data, query });
+
+      if (query.state.status === "error") {
+        if (retryTimer.current === null) {
+          retryTimer.current = window.setTimeout(() => {
+            console.log("refetching");
+            statusQuery.refetch();
+            retryTimer.current = null;
+          }, 60000);
+        }
+        return false;
+      }
+
+      return props.fetchInterval || 2000;
+    },
+    // retry: 3,
   });
 
   const textSize = useMemo(() => {
@@ -126,15 +149,23 @@ function Status(props: StatusProps) {
 
   const isLoading = settingsQuery.isLoading || statusQuery.isLoading;
   const isError = settingsQuery.isError || statusQuery.isError;
+  const isFetching = settingsQuery.isFetching || statusQuery.isFetching;
 
-  if (isError || !status) {
+  console.log(isError);
+
+  if (isError) {
+    if (isFetching) {
+      return <Loader />;
+    }
     return (
-      <div className="text-4xl text-center underline flex h-full justify-center items-center">
-        <p className="h-fit pb-8">Can't Load Data</p>
+      <div className="text-4xl text-center underline flex h-full justify-center items-center text-error">
+        <X size={height} />
       </div>
     );
   } else if (isLoading) {
     return <Loader />;
+  } else if (!status) {
+    return null;
   }
 
   const statusColor = () => {
@@ -163,7 +194,7 @@ function Status(props: StatusProps) {
           </h1>
         </div>
         <div className="w-4/12 flex justify-center items-center">
-          {status.direction && (
+          {status.direction && showDirection && (
             <DirectionIcon size={textSize.main} direction={status.direction} />
           )}
         </div>

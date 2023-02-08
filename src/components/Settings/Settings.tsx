@@ -26,6 +26,7 @@ import { getFromObj } from "@/lib/utils";
 import SettingsItem from "./SettingsItem";
 import Loader from "@comp/Loader";
 import { useQueryClient } from "@tanstack/react-query";
+import { SettingsOpts } from "./SettingsOpts";
 interface SettingsGroupProps {
   children: React.ReactNode;
   name: string;
@@ -40,185 +41,11 @@ const SettingsGroup = (props: SettingsGroupProps) => {
   );
 };
 
-function createSettingsOptions(): ISettingsGroup[] {
-  return [
-    {
-      name: "general",
-      children: [
-        {
-          name: "url",
-          label: "Url",
-          placeholder: "Enter nightscout url...",
-          type: "text",
-        },
-        {
-          name: "token",
-          label: "Token",
-          placeholder: "Enter nightscout token...",
-          type: "password",
-        },
-        {
-          name: "fetchInterval",
-          label: "Fetch Interval",
-          placeholder: "#",
-          type: "number",
-          width: "w-fit",
-        },
-        {
-          name: "quitOnClose",
-          label: "Quit on Close",
-          placeholder: "",
-          type: "checkbox",
-          width: "w-fit",
-        },
-      ],
-    },
-
-    {
-      name: "appearance",
-      children: [
-        {
-          name: "appearance.theme",
-          label: "Theme",
-          placeholder: "Select Theme",
-          type: "select",
-          width: "w-fit",
-          children: Themes.map((t) => <option key={t}>{t}</option>),
-        },
-
-        {
-          name: "appearance.nonInteractive",
-          label: "Display Only",
-          placeholder: "",
-          type: "checkbox",
-          width: "w-fit",
-        },
-
-        {
-          name: "appearance.width",
-          label: "Width",
-          placeholder: "#",
-          type: "number",
-          width: "w-32",
-          customProps: {
-            min: 0,
-          },
-        },
-
-        {
-          name: "appearance.height",
-          label: "Height",
-          placeholder: "#",
-          type: "number",
-          width: "w-32",
-          customProps: {
-            min: 0,
-          },
-        },
-
-        {
-          name: "appearance.position",
-          label: "Position",
-          placeholder: "Select Position",
-          type: "select",
-          width: "w-fit",
-          children: Positions.map((p) => (
-            <option value={p[0]} key={p[0]}>
-              {p[1]}
-            </option>
-          )),
-        },
-
-        {
-          name: "appearance.themeBackground",
-          label: "Use Theme Background",
-          placeholder: "",
-          type: "checkbox",
-          width: "w-fit",
-        },
-
-        {
-          name: "appearance.showDelta",
-          label: "Show Delta",
-          placeholder: "",
-          type: "checkbox",
-          width: "w-fit",
-        },
-        {
-          name: "appearance.showLastUpdated",
-          label: "Show Last Updated",
-          placeholder: "",
-          type: "checkbox",
-          width: "w-fit",
-        },
-
-        {
-          name: "appearance.background",
-          label: "Background",
-          placeholder: "",
-          type: "color",
-          width: "w-fit",
-        },
-        {
-          name: "appearance.backgroundTransparency",
-          label: "Background Transparency",
-          placeholder: "#",
-          type: "number",
-          width: "w-fit",
-          customProps: {
-            min: 0,
-            max: 100,
-          },
-        },
-      ],
-    },
-    {
-      name: "thresholds",
-      children: [
-        {
-          name: "fetchThresholds",
-          label: "Get thresholds from Nightscout",
-          type: "checkbox",
-        },
-
-        {
-          name: "thresholds.high",
-          label: "High",
-          placeholder: "Enter high...",
-          type: "number",
-          width: "w-1/4",
-        },
-        {
-          name: "thresholds.targetTop",
-          label: "Target Top",
-          placeholder: "Enter target top...",
-          type: "number",
-          width: "w-1/4",
-        },
-        {
-          name: "thresholds.targetBottom",
-          label: "Target Bottom",
-          placeholder: "Enter target bottom...",
-          type: "number",
-          width: "w-1/4",
-        },
-        {
-          name: "thresholds.low",
-          label: "Low",
-          placeholder: "Enter low...",
-          type: "number",
-          width: "w-1/4",
-        },
-      ],
-    },
-  ];
-}
-
 function Settings() {
   const snap = useSnapshot(state);
 
   const options = useMemo(() => {
-    const opts = createSettingsOptions();
+    const opts = SettingsOpts;
 
     for (const group of opts) {
       for (const option of group.children) {

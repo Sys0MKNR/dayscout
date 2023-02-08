@@ -69,6 +69,7 @@ export const SettingsSchema = z.object({
       height: z.coerce.number().default(200),
       showDelta: z.coerce.boolean().default(true),
       showLastUpdated: z.coerce.boolean().default(true),
+      showDirection: z.coerce.boolean().default(true),
     })
     .default({}),
 
