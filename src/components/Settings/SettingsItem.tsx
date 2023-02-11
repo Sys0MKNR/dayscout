@@ -126,6 +126,34 @@ const RangeInputElement = (
   );
 };
 
+const HidableInputElement = (
+  props: DetailedHTMLProps<
+    InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  >
+) => {
+  const { register } = useFormContext();
+
+  const hiderName = (props.name as string) + ".active";
+  const valueName = (props.name as string) + ".value";
+
+  const [showInput, setShowInput] = useState(false);
+
+  console.log(props);
+
+  return (
+    <div className="input-group w-full input-group-sm">
+      <CheckBoxInputElement name={hiderName} />
+      <input
+        {...props}
+        {...register(valueName)}
+        defaultValue={(props.defaultValue as any).value}
+        className="input input-bordered w-full input-xs"
+      />
+    </div>
+  );
+};
+
 function getInputElement(type: string) {
   switch (type) {
     case "password":
@@ -138,6 +166,8 @@ function getInputElement(type: string) {
       return SelectInputElement;
     case "range":
       return RangeInputElement;
+    case "hidable":
+      return HidableInputElement;
     default:
       return DefaultInputElement;
   }
@@ -157,6 +187,7 @@ const SettingsItem = (props: SettingsItemProps) => {
     type = "text",
     children,
     customProps,
+    childProps,
   } = item;
 
   const Input = getInputElement(type);

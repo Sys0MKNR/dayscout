@@ -1,5 +1,5 @@
 import { emit, listen } from "@tauri-apps/api/event";
-import { z } from "zod";
+import { z, ZodAny } from "zod";
 
 import { Store } from "tauri-plugin-store-api";
 import { proxy } from "valtio";
@@ -44,13 +44,13 @@ const _Positions = Object.entries(Position);
 
 export const Positions = _Positions.slice(0, 9);
 
-const HexColorSchema = z
-  .string()
-  .min(4)
-  .max(9)
-  .startsWith("#")
-  .nullable()
-  .default(null);
+const HexColorSchema = z.string().min(4).max(9).startsWith("#").default("#000");
+
+const Overwrite = <T extends z.ZodTypeAny>(type: T) =>
+  z.object({
+    active: z.coerce.boolean().default(false),
+    value: type,
+  });
 
 export const SettingsSchema = z.object({
   url: z.string().default(""),
@@ -59,10 +59,7 @@ export const SettingsSchema = z.object({
   appearance: z
     .object({
       theme: z.enum(Themes).default("forest"),
-
       backgroundTransparency: z.coerce.number().min(0).max(100).default(100),
-      background: HexColorSchema.default("#000000"),
-      themeBackground: z.coerce.boolean().default(true),
       nonInteractive: z.coerce.boolean().default(true),
       position: z.coerce.number().default(0),
       width: z.coerce.number().default(200),
@@ -70,6 +67,15 @@ export const SettingsSchema = z.object({
       showDelta: z.coerce.boolean().default(true),
       showLastUpdated: z.coerce.boolean().default(true),
       showDirection: z.coerce.boolean().default(true),
+
+      overwrites: z
+        .object({
+          background: Overwrite(HexColorSchema).default({}),
+          urgent: Overwrite(HexColorSchema).default({}),
+          warn: Overwrite(HexColorSchema).default({}),
+          ok: Overwrite(HexColorSchema).default({}),
+        })
+        .default({}),
     })
     .default({}),
 
@@ -82,6 +88,7 @@ export const SettingsSchema = z.object({
       targetTop: z.coerce.number().default(180),
     })
     .default({}),
+
   quitOnClose: z.coerce.boolean().default(false),
 });
 
@@ -101,6 +108,7 @@ export interface ISettingOption {
   opts?: any;
   children?: ReactNode;
   customProps?: Record<string, any>;
+  childProps?: Record<string, any>;
 }
 
 const store = new Store(".settings.dat");

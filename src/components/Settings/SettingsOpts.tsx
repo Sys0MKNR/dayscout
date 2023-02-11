@@ -113,21 +113,21 @@ export const SettingsOpts: ISettingsGroup[] = [
         children: Themes.map((t) => <option key={t}>{t}</option>),
       },
 
-      {
-        name: "appearance.themeBackground",
-        label: "Use Theme Background",
-        placeholder: "",
-        type: "checkbox",
-        width: "w-fit",
-      },
+      // {
+      //   name: "appearance.themeBackground",
+      //   label: "Use Theme Background",
+      //   placeholder: "",
+      //   type: "checkbox",
+      //   width: "w-fit",
+      // },
 
-      {
-        name: "appearance.background",
-        label: "Background",
-        placeholder: "",
-        type: "color",
-        width: "w-fit",
-      },
+      // {
+      //   name: "appearance.background",
+      //   label: "Background",
+      //   placeholder: "",
+      //   type: "color",
+      //   width: "w-fit",
+      // },
       {
         name: "appearance.backgroundTransparency",
         label: "Background Transparency",
@@ -141,6 +141,23 @@ export const SettingsOpts: ISettingsGroup[] = [
       },
     ],
   },
+
+  {
+    name: "Overwrites",
+    children: [
+      {
+        name: "appearance.overwrites.background",
+        label: "Background",
+        placeholder: " ",
+        type: "hidable",
+        width: "w-1/2",
+        // childProps: {
+        //   subType: "color",
+        // },
+      },
+    ],
+  },
+
   {
     name: "Thresholds",
     children: [
