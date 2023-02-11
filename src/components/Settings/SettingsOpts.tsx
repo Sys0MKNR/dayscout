@@ -38,11 +38,40 @@ export const SettingsOpts: ISettingsGroup[] = [
     name: "Display",
     children: [
       {
+        name: "appearance.position",
+        label: "Position",
+        placeholder: "Select Position",
+        type: "select",
+        width: "w-1/3",
+        children: Positions.map((p) => (
+          <option value={p[0]} key={p[0]}>
+            {p[1]}
+          </option>
+        )),
+      },
+
+      {
+        name: "appearance.x",
+        label: "X",
+        placeholder: "#",
+        type: "number",
+        width: "w-1/3",
+      },
+
+      {
+        name: "appearance.y",
+        label: "Y",
+        placeholder: "#",
+        type: "number",
+        width: "w-1/3",
+      },
+
+      {
         name: "appearance.width",
         label: "Width",
         placeholder: "#",
         type: "number",
-        width: "w-32",
+        width: "w-1/3",
         customProps: {
           min: 0,
         },
@@ -53,50 +82,40 @@ export const SettingsOpts: ISettingsGroup[] = [
         label: "Height",
         placeholder: "#",
         type: "number",
-        width: "w-32",
+        width: "w-1/3",
         customProps: {
           min: 0,
         },
       },
-      {
-        name: "appearance.position",
-        label: "Position",
-        placeholder: "Select Position",
-        type: "select",
-        width: "w-fit",
-        children: Positions.map((p) => (
-          <option value={p[0]} key={p[0]}>
-            {p[1]}
-          </option>
-        )),
-      },
+
       {
         name: "appearance.nonInteractive",
-        label: "Display Only",
+        label: "Non Interactive",
         placeholder: "",
         type: "checkbox",
-        width: "w-fit",
+        width: "w-1/3",
       },
+
       {
         name: "appearance.showDelta",
         label: "Show Delta",
         placeholder: "",
         type: "checkbox",
-        width: "w-fit",
+        width: "w-1/3",
       },
       {
         name: "appearance.showLastUpdated",
         label: "Show Last Updated",
         placeholder: "",
         type: "checkbox",
-        width: "w-fit",
+        width: "w-1/3",
       },
       {
         name: "appearance.showDirection",
         label: "Show Direction",
         placeholder: "",
         type: "checkbox",
-        width: "w-fit",
+        width: "w-1/3",
       },
     ],
   },
@@ -113,21 +132,6 @@ export const SettingsOpts: ISettingsGroup[] = [
         children: Themes.map((t) => <option key={t}>{t}</option>),
       },
 
-      // {
-      //   name: "appearance.themeBackground",
-      //   label: "Use Theme Background",
-      //   placeholder: "",
-      //   type: "checkbox",
-      //   width: "w-fit",
-      // },
-
-      // {
-      //   name: "appearance.background",
-      //   label: "Background",
-      //   placeholder: "",
-      //   type: "color",
-      //   width: "w-fit",
-      // },
       {
         name: "appearance.backgroundTransparency",
         label: "Background Transparency",
@@ -146,14 +150,73 @@ export const SettingsOpts: ISettingsGroup[] = [
     name: "Overwrites",
     children: [
       {
-        name: "appearance.overwrites.background",
+        name: "appearance.overwrites.background.active",
         label: "Background",
         placeholder: " ",
-        type: "hidable",
-        width: "w-1/2",
-        // childProps: {
-        //   subType: "color",
-        // },
+        type: "checkbox",
+        width: "w-1/4",
+        stacked: false,
+        className: "justify-between",
+      },
+      {
+        name: "appearance.overwrites.background.value",
+        label: " ",
+        placeholder: "",
+        type: "color",
+        width: "w-3/4",
+        stacked: false,
+      },
+
+      {
+        name: "appearance.overwrites.ok.active",
+        label: "Ok",
+        placeholder: " ",
+        type: "checkbox",
+        width: "w-1/4",
+        stacked: false,
+        className: "justify-between",
+      },
+      {
+        name: "appearance.overwrites.ok.value",
+        label: " ",
+        placeholder: "",
+        type: "color",
+        width: "w-3/4",
+        stacked: false,
+      },
+      {
+        name: "appearance.overwrites.warn.active",
+        label: "Warn",
+        placeholder: " ",
+        type: "checkbox",
+        width: "w-1/4",
+        stacked: false,
+        className: "justify-between",
+      },
+      {
+        name: "appearance.overwrites.warn.value",
+        label: " ",
+        placeholder: "",
+        type: "color",
+        width: "w-3/4",
+        stacked: false,
+      },
+      {
+        name: "appearance.overwrites.urgent.active",
+        label: "Urgent",
+        placeholder: " ",
+        type: "checkbox",
+        width: "w-1/4",
+        stacked: false,
+        className: "justify-between",
+      },
+      {
+        name: "appearance.overwrites.urgent.value",
+        label: " ",
+        placeholder: "",
+        type: "color",
+        width: "w-3/4",
+        stacked: false,
       },
     ],
   },

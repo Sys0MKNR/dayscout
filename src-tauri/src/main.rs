@@ -39,6 +39,7 @@ fn create_settings_window(app_handle: &AppHandle) -> Result<window::Window, Erro
     .transparent(false)
     .visible(false)
     .resizable(true)
+    .decorations(true)
     // .decorations(false)
     .title("dayscout settings")
     .build()?;

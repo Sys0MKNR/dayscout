@@ -88,6 +88,7 @@ function Status(props: StatusProps) {
     showDelta,
     showLastUpdated,
     showDirection,
+    overwrites,
   } = props.appearance;
 
   const height = toolbar ? fullHeight - 32 : fullHeight;
@@ -169,23 +170,52 @@ function Status(props: StatusProps) {
   }
 
   const statusColor = () => {
-    switch (status?.state) {
+    const obj: {
+      style?: React.CSSProperties;
+      className?: string;
+    } = {
+      style: undefined,
+      className: undefined,
+    };
+
+    let value: string;
+
+    switch (status.state) {
       case "urgent":
-        return "text-error";
+        value = "text-error";
+        break;
       case "warn":
-        return "text-warning";
+        value = "text-warning";
+        break;
       case "ok":
-        return "text-gray-100";
+        value = "text-gray-100";
+        break;
       default:
-        return "text-gray-100";
+        value = "text-gray-100";
+        break;
     }
+
+    const overwrite = overwrites[status.state];
+
+    if (overwrite.active) {
+      obj.style = {
+        color: overwrite.value,
+      };
+    } else {
+      obj.className = value;
+    }
+
+    return obj;
   };
 
-  //  h-[calc(100%-2rem)]
+  const color = statusColor();
 
   return (
     <div
-      className={`flex flex-col text-center select-none h-full overflow-hidden ${statusColor()}`}
+      style={color.style}
+      className={`flex flex-col text-center select-none h-full overflow-hidden ${
+        color.className || ""
+      }`}
     >
       <div className="flex w-full flex-grow">
         <div className="w-8/12 flex justify-center items-center">

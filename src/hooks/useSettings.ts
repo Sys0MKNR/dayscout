@@ -40,11 +40,25 @@ export const Themes: Readonly<[string, ...string[]]> = [
   "wireframe",
 ];
 
-const _Positions = Object.entries(Position);
+function genPositions(): [string, number][] {
+  const TauriPositions = Object.entries(Position).slice(0, 9);
 
-export const Positions = _Positions.slice(0, 9);
+  const Positions = [[-2, "Manual"], [-1, "Custom"], ...TauriPositions] as [
+    string,
+    number
+  ][];
 
-const HexColorSchema = z.string().min(4).max(9).startsWith("#").default("#000");
+  return Positions;
+}
+
+export const Positions = genPositions();
+
+const HexColorSchema = z
+  .string()
+  .min(4)
+  .max(9)
+  .startsWith("#")
+  .default("#000000");
 
 const Overwrite = <T extends z.ZodTypeAny>(type: T) =>
   z.object({
@@ -62,6 +76,8 @@ export const SettingsSchema = z.object({
       backgroundTransparency: z.coerce.number().min(0).max(100).default(100),
       nonInteractive: z.coerce.boolean().default(true),
       position: z.coerce.number().default(0),
+      x: z.coerce.number().default(0),
+      y: z.coerce.number().default(0),
       width: z.coerce.number().default(200),
       height: z.coerce.number().default(200),
       showDelta: z.coerce.boolean().default(true),
@@ -108,7 +124,8 @@ export interface ISettingOption {
   opts?: any;
   children?: ReactNode;
   customProps?: Record<string, any>;
-  childProps?: Record<string, any>;
+  stacked?: boolean;
+  className?: string;
 }
 
 const store = new Store(".settings.dat");

@@ -126,33 +126,33 @@ const RangeInputElement = (
   );
 };
 
-const HidableInputElement = (
-  props: DetailedHTMLProps<
-    InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  >
-) => {
-  const { register } = useFormContext();
+// const HidableInputElement = (
+//   props: DetailedHTMLProps<
+//     InputHTMLAttributes<HTMLInputElement>,
+//     HTMLInputElement
+//   >
+// ) => {
+//   const { register } = useFormContext();
 
-  const hiderName = (props.name as string) + ".active";
-  const valueName = (props.name as string) + ".value";
+//   const hiderName = (props.name as string) + ".active";
+//   const valueName = (props.name as string) + ".value";
 
-  const [showInput, setShowInput] = useState(false);
+//   const [showInput, setShowInput] = useState(false);
 
-  console.log(props);
+//   console.log(props);
 
-  return (
-    <div className="input-group w-full input-group-sm">
-      <CheckBoxInputElement name={hiderName} />
-      <input
-        {...props}
-        {...register(valueName)}
-        defaultValue={(props.defaultValue as any).value}
-        className="input input-bordered w-full input-xs"
-      />
-    </div>
-  );
-};
+//   return (
+//     <div className="input-group w-full input-group-sm">
+//       <CheckBoxInputElement name={hiderName} />
+//       <input
+//         {...props}
+//         {...register(valueName)}
+//         defaultValue={(props.defaultValue as any).value}
+//         className="input input-bordered w-full input-xs"
+//       />
+//     </div>
+//   );
+// };
 
 function getInputElement(type: string) {
   switch (type) {
@@ -166,8 +166,8 @@ function getInputElement(type: string) {
       return SelectInputElement;
     case "range":
       return RangeInputElement;
-    case "hidable":
-      return HidableInputElement;
+    // case "hidable":
+    //   return HidableInputElement;
     default:
       return DefaultInputElement;
   }
@@ -187,15 +187,24 @@ const SettingsItem = (props: SettingsItemProps) => {
     type = "text",
     children,
     customProps,
-    childProps,
+    stacked = true,
+    className,
   } = item;
 
   const Input = getInputElement(type);
 
+  const orientation = stacked ? "flex-col" : "items-center";
+
+  const margin = stacked ? "" : "mr-2";
+
   return (
-    <div className={`${item.width || "w-full"} px-4`}>
-      <label htmlFor={name} className="label">
-        <span className="label-text text-base">{label || name}</span>
+    <div
+      className={`${
+        item.width || "w-full"
+      } px-4 flex ${orientation} ${className}`}
+    >
+      <label htmlFor={name} className={`label ${margin}`}>
+        <span className="label-text text-base min-h-6">{label || name}</span>
       </label>
 
       <Input

@@ -7,7 +7,11 @@ import { Positions, state } from "../hooks/useSettings";
 import StatusContainer from "@comp/StatusContainer";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { appWindow, LogicalSize, PhysicalSize } from "@tauri-apps/api/window";
+import {
+  appWindow,
+  LogicalPosition,
+  LogicalSize,
+} from "@tauri-apps/api/window";
 
 import { moveWindow } from "tauri-plugin-positioner-api";
 
@@ -36,7 +40,18 @@ function Wrapper() {
       )
     );
 
-    await moveWindow(snap.settings.appearance.position);
+    const pos = snap.settings.appearance.position;
+
+    if (pos >= 0) {
+      await moveWindow(pos);
+    } else if (pos === -1) {
+      appWindow.setPosition(
+        new LogicalPosition(
+          snap.settings.appearance.x,
+          snap.settings.appearance.y
+        )
+      );
+    }
   };
 
   useEffect(() => {

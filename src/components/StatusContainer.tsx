@@ -19,17 +19,13 @@ function StatusContainer(props: StatusContainerProps) {
 
   const queryClient = useQueryClient();
 
-  const {
-    background,
-    backgroundTransparency,
-    themeBackground,
-    nonInteractive,
-  } = props.appearance;
+  const { overwrites, backgroundTransparency, nonInteractive } =
+    props.appearance;
 
   const bg = useMemo(() => {
     console.log(props.appearance);
 
-    if (themeBackground) {
+    if (!overwrites.background.active) {
       let color = "transparent";
 
       if (backgroundTransparency > 0) {
@@ -37,6 +33,7 @@ function StatusContainer(props: StatusContainerProps) {
       }
 
       return color;
+    } else {
     }
 
     const transparency = Math.round(
@@ -45,7 +42,7 @@ function StatusContainer(props: StatusContainerProps) {
       .toString(16)
       .padStart(2, "0");
 
-    return background + transparency;
+    return overwrites.background.value + transparency;
   }, [props.appearance]);
 
   const toggleSettigns = async () => {
