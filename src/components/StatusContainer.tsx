@@ -1,12 +1,13 @@
 import { range } from "@/lib/utils";
 import Status, { StatusProps } from "@comp/Status";
 import { appWindow } from "@tauri-apps/api/window";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Refresh, Settings, X } from "tabler-icons-react";
 
 import { useQueryClient } from "@tanstack/react-query";
 
 import { invoke } from "@tauri-apps/api";
+import { listen } from "@tauri-apps/api/event";
 
 export interface StatusContainerProps extends StatusProps {
   toolbar?: boolean;
@@ -15,6 +16,7 @@ export interface StatusContainerProps extends StatusProps {
 }
 
 function StatusContainer(props: StatusContainerProps) {
+  console.log("statuscontainer");
   const { toolbar = true, closeBtn = true } = props;
 
   const queryClient = useQueryClient();
@@ -22,9 +24,17 @@ function StatusContainer(props: StatusContainerProps) {
   const { overwrites, backgroundTransparency, nonInteractive } =
     props.appearance;
 
-  const bg = useMemo(() => {
-    console.log(props.appearance);
+  useEffect(() => {
+    const unlisten = listen("status:forceRefresh", () => {
+      console.log("force refresh");
+      queryClient.resetQueries();
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
 
+  const bg = useMemo(() => {
     if (!overwrites.background.active) {
       let color = "transparent";
 
@@ -63,11 +73,9 @@ function StatusContainer(props: StatusContainerProps) {
         >
           <button
             className="btn btn-ghost btn-sm"
-            onClick={() =>
-              queryClient.invalidateQueries({
-                queryKey: ["status", "settings"],
-              })
-            }
+            onClick={() => {
+              queryClient.resetQueries({ exact: true });
+            }}
           >
             <Refresh></Refresh>
           </button>
@@ -97,7 +105,7 @@ function StatusContainer(props: StatusContainerProps) {
         </div>
       )}
 
-      <Status {...props}></Status>
+      <Status {...props} url={props.url}></Status>
     </div>
   );
 }

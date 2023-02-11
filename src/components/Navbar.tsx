@@ -1,4 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { emit } from "@tauri-apps/api/event";
 import { appWindow } from "@tauri-apps/api/window";
 import { Refresh, X } from "tabler-icons-react";
 
@@ -18,12 +19,12 @@ function Navbar(props: NavbarProps) {
         <a className="btn btn-ghost normal-case text-xl">Dayscout</a>
       </div>
       <div className="flex">
-        {/* <button
+        <button
           className="btn btn-square btn-ghost"
-          onClick={() => queryClient.invalidateQueries()}
+          onClick={() => emit("status:forceRefresh")}
         >
           <Refresh />
-        </button> */}
+        </button>
         <button
           className="btn btn-square btn-ghost"
           onClick={() => appWindow.hide()}

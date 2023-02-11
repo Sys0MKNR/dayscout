@@ -8,7 +8,7 @@ import {
 
 import "react-toastify/dist/ReactToastify.css";
 import { useSnapshot } from "valtio";
-import { state } from "./hooks/useSettings";
+import { listenToSettingsChange, state } from "./hooks/useSettings";
 import Splaschscreen from "@comp/Splaschscreen";
 
 const SettingsView = lazy(() => import("./views/SettingsView"));
@@ -27,8 +27,11 @@ const Wrapper = () => {
   }, [snap.settings.appearance.theme]);
 
   useEffect(() => {
-    clientQuery.invalidateQueries();
-  }, [snap.settings]);
+    const unlisten = listenToSettingsChange();
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
 
   const view = useMemo(() => {
     const urlParams = new URLSearchParams(window.location.search);

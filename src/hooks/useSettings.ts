@@ -152,12 +152,20 @@ export const updateSettings = async (settings: Subset<ISettingsSchema>) => {
 
   await store.save();
 
-  // await wait(2000);
   emit("settings-updated");
 };
 
-(async () => {
-  const unlisten = await listen("settings-updated", () => {
+// export function loadSettings() {
+//   state.settings = load();
+// }
+
+export function listenToSettingsChange() {
+  return listen("settings-updated", () => {
+    console.log("settings updated");
     state.settings = load();
   });
-})();
+}
+
+// (async () => {
+//   const unlisten =
+// })();

@@ -55,9 +55,6 @@ function Wrapper() {
   };
 
   useEffect(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["status", "settings"],
-    });
     updateWindow();
   }, [snap.settings]);
 

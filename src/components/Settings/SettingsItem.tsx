@@ -36,7 +36,7 @@ const CheckBoxInputElement = (
       {...register(props.name as any)}
       className="toggle"
       type="checkbox"
-      checked={Boolean(watchCheck)}
+      // checked={Boolean(watchCheck)}
     />
   );
 };
@@ -120,7 +120,7 @@ const RangeInputElement = (
     <input
       {...props}
       {...register(props.name as any)}
-      className="range range-sm"
+      className="range range-sm m-1"
       type="range"
     />
   );

@@ -9,7 +9,7 @@ import { fetch } from "@tauri-apps/api/http";
 const URL_STATUS = "/api/v2/properties";
 const URL_SETTINGS = "/api/v1/status";
 
-interface IGetStatusArgs {
+export interface IGetStatusArgs {
   url: string;
   token: string;
   thresholds: ISettingsSchema["thresholds"];
@@ -26,9 +26,9 @@ export interface IStatus {
 }
 
 export const getStatus = async (args: IGetStatusArgs) => {
-  console.log("status fetch");
-
   const { url, thresholds, token } = args;
+
+  console.log("status args", args);
 
   const statusURL = new URL(URL_STATUS, url);
   statusURL.searchParams.append("token", token);
@@ -72,7 +72,7 @@ export const getStatus = async (args: IGetStatusArgs) => {
   return s;
 };
 
-interface IGetSettingsArgs {
+export interface IGetSettingsArgs {
   url: string;
   token: string;
 }
@@ -95,8 +95,6 @@ export const getSettings = async (args: IGetSettingsArgs) => {
   });
 
   const data: any = res.data;
-
-  console.log(data);
 
   const thresholds = data.settings.thresholds;
 

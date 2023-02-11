@@ -3,12 +3,10 @@
     windows_subsystem = "windows"
 )]
 
-// use std::error::Error;
-
 use tauri::{
     window, AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
 };
-use tauri_plugin_window_state::{AppHandleExt, StateFlags};
+// use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 
 #[derive(Debug, thiserror::Error)]
 enum Error {
@@ -18,7 +16,6 @@ enum Error {
     InvalidWindowLabel,
 }
 
-// we must manually implement serde::Serialize
 impl serde::Serialize for Error {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -129,7 +126,7 @@ fn main() {
 
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
-        .plugin(tauri_plugin_window_state::Builder::default().build())
+        // .plugin(tauri_plugin_window_state::Builder::default().build())
         .plugin(tauri_plugin_positioner::init())
         .invoke_handler(tauri::generate_handler![
             show_or_create_window_cmd,
@@ -153,7 +150,8 @@ fn main() {
                             .expect("settings window can't be created");
                     }
                     "exit" => {
-                        app.save_window_state(StateFlags::all()).unwrap();
+                        // app.save_window_state(StateFlags::all().difference(StateFlags::VISIBLE))
+                        //     .unwrap();
                         std::process::exit(0);
                     }
                     _ => {}

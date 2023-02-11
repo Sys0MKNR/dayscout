@@ -51,9 +51,7 @@ function Settings() {
       for (const option of group.children) {
         const val = getFromObj<string>(snap.settings, option.name);
 
-        if (val) {
-          option.value = val as any;
-        }
+        option.value = val as any;
       }
     }
 
@@ -78,7 +76,6 @@ function Settings() {
         pauseOnHover: false,
         pauseOnFocusLoss: false,
         draggable: true,
-        // progress: undefined,
         theme: "colored",
         toastId: "settings_saved",
         className: "bg-success bg-base-content",

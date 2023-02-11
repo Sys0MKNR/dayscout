@@ -9,7 +9,6 @@ import {
   ArrowUpRight,
   ChevronsDown,
   ChevronsUp,
-  Error404,
   Icon as IIcon,
   Minus,
   X,
@@ -19,7 +18,12 @@ import Loader from "./Loader";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { getSettings, getStatus } from "@/lib/api";
+import {
+  getSettings,
+  getStatus,
+  IGetSettingsArgs,
+  IGetStatusArgs,
+} from "@/lib/api";
 
 const directionMap: Record<string, IIcon | null> = {
   NONE: null,
@@ -70,16 +74,21 @@ const DirectionIcon = (props: { direction: string; size: number }) => {
 };
 
 function Status(props: StatusProps) {
+  console.log("status");
+  const { url, token, thresholds, fetchThresholds, fetchInterval } = props;
+
   const retryTimer = useRef<number | null>(null);
 
   const settingsQuery = useQuery({
-    queryKey: ["settings"],
-    queryFn: async () => {
+    queryKey: ["settings", { url, token, thresholds }],
+    queryFn: async ({ queryKey }) => {
       console.log("settings fetch");
-      return props.fetchThresholds
-        ? await getSettings({ url: props.url, token: props.token })
-        : { thresholds: props.thresholds };
+      return fetchThresholds
+        ? await getSettings(queryKey[1] as IGetSettingsArgs)
+        : { thresholds: thresholds };
     },
+    retry: 2,
+    refetchOnWindowFocus: false,
   });
 
   const {
@@ -94,17 +103,15 @@ function Status(props: StatusProps) {
   const height = toolbar ? fullHeight - 32 : fullHeight;
 
   const statusQuery = useQuery({
-    queryKey: ["status"],
-    queryFn: () =>
-      getStatus({
-        url: props.url,
-        token: props.token,
-        thresholds: settingsQuery?.data?.thresholds as any,
-      }),
+    queryKey: [
+      "status",
+      { url, token, thresholds: settingsQuery?.data?.thresholds },
+    ],
+    queryFn: async ({ queryKey }) => {
+      return getStatus(queryKey[1] as IGetStatusArgs);
+    },
     enabled: !!settingsQuery?.data?.thresholds && !settingsQuery.isError,
     refetchInterval: (data, query) => {
-      console.log({ data, query });
-
       if (query.state.status === "error") {
         if (retryTimer.current === null) {
           retryTimer.current = window.setTimeout(() => {
@@ -116,9 +123,10 @@ function Status(props: StatusProps) {
         return false;
       }
 
-      return props.fetchInterval || 2000;
+      return fetchInterval || 2000;
     },
-    // retry: 3,
+    retry: 2,
+    refetchOnWindowFocus: false,
   });
 
   const textSize = useMemo(() => {
@@ -151,8 +159,6 @@ function Status(props: StatusProps) {
   const isLoading = settingsQuery.isLoading || statusQuery.isLoading;
   const isError = settingsQuery.isError || statusQuery.isError;
   const isFetching = settingsQuery.isFetching || statusQuery.isFetching;
-
-  console.log(isError);
 
   if (isError) {
     if (isFetching) {
