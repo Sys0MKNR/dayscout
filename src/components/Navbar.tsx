@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { emit } from "@tauri-apps/api/event";
 import { appWindow } from "@tauri-apps/api/window";
 import { Refresh, X } from "tabler-icons-react";
@@ -8,8 +7,6 @@ export interface NavbarProps {
 }
 
 function Navbar(props: NavbarProps) {
-  const queryClient = useQueryClient();
-
   return (
     <header
       data-tauri-drag-region
@@ -24,12 +21,6 @@ function Navbar(props: NavbarProps) {
           onClick={() => emit("status:forceRefresh")}
         >
           <Refresh />
-        </button>
-        <button
-          className="btn btn-square btn-ghost"
-          onClick={() => appWindow.hide()}
-        >
-          <X />
         </button>
       </div>
     </header>

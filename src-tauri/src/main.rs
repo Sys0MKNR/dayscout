@@ -87,17 +87,20 @@ fn get_or_create_window(label: &str, app_handle: &AppHandle) -> Result<window::W
 }
 
 fn toggle_window(label: &str, app_handle: &AppHandle) -> Result<(), Error> {
-    let window = get_or_create_window(label, app_handle)?;
+    let window = app_handle.get_window(label);
 
-    let visible = window.is_visible()?;
+    match window {
+        Some(w) => {
+            let visible = w.is_visible()?;
 
-    println!("toggle_window: {} {}", label, visible);
-
-    if visible {
-        window.hide()?;
-    } else {
-        window.show()?;
-    }
+            if visible {
+                w.hide()?;
+            } else {
+                w.show()?
+            }
+        }
+        None => show_or_create_window(label, app_handle)?,
+    };
 
     Ok(())
 }
