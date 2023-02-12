@@ -12,10 +12,10 @@ body,
   pointer-events: none;
 }
 
-#mini-toolbar {
+#main-toolbar {
   pointer-events: auto !important;
 }
 
-#mini-toolbar * {
+#main-toolbar * {
   pointer-events: auto !important;
 }

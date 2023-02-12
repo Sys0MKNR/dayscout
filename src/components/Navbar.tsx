@@ -1,5 +1,6 @@
+import { emit } from "@tauri-apps/api/event";
 import { appWindow } from "@tauri-apps/api/window";
-import { X } from "tabler-icons-react";
+import { Refresh, X } from "tabler-icons-react";
 
 export interface NavbarProps {
   fullscreen?: boolean;
@@ -17,9 +18,9 @@ function Navbar(props: NavbarProps) {
       <div className="flex">
         <button
           className="btn btn-square btn-ghost"
-          onClick={() => appWindow.hide()}
+          onClick={() => emit("status:forceRefresh")}
         >
-          <X></X>
+          <Refresh />
         </button>
       </div>
     </header>

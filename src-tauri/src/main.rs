@@ -6,9 +6,26 @@
 use tauri::{
     window, AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
 };
-use tauri_plugin_window_state::{AppHandleExt, StateFlags};
+// use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 
-fn create_settings_window(app_handle: &AppHandle) -> window::Window {
+#[derive(Debug, thiserror::Error)]
+enum Error {
+    #[error(transparent)]
+    Tauri(#[from] tauri::Error),
+    #[error("unknown window label")]
+    InvalidWindowLabel,
+}
+
+impl serde::Serialize for Error {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::ser::Serializer,
+    {
+        serializer.serialize_str(self.to_string().as_ref())
+    }
+}
+
+fn create_settings_window(app_handle: &AppHandle) -> Result<window::Window, Error> {
     let window = tauri::WindowBuilder::new(
         app_handle,
         "settings",
@@ -19,19 +36,19 @@ fn create_settings_window(app_handle: &AppHandle) -> window::Window {
     .transparent(false)
     .visible(false)
     .resizable(true)
-    .decorations(false)
+    .decorations(true)
+    // .decorations(false)
     .title("dayscout settings")
-    .build()
-    .unwrap();
+    .build()?;
 
-    window
+    Ok(window)
 }
 
-fn create_mini_window(app_handle: &AppHandle) -> window::Window {
+fn create_main_window(app_handle: &AppHandle) -> Result<window::Window, Error> {
     let window = tauri::WindowBuilder::new(
         app_handle,
-        "mini",
-        tauri::WindowUrl::App("index.html?a=mini".into()),
+        "main",
+        tauri::WindowUrl::App("index.html?a=main".into()),
     )
     .fullscreen(false)
     .inner_size(200.0, 200.0)
@@ -41,25 +58,25 @@ fn create_mini_window(app_handle: &AppHandle) -> window::Window {
     .transparent(true)
     .visible(false)
     .decorations(false)
-    .build()
-    .unwrap();
+    .build()?;
 
-    window
+    Ok(window)
 }
 
-fn show_or_create_window(label: &str, app_handle: &AppHandle) {
-    let window = get_or_create_window(label, app_handle);
-    window.show().unwrap();
+fn show_or_create_window(label: &str, app_handle: &AppHandle) -> Result<(), Error> {
+    let window = get_or_create_window(label, app_handle)?;
+    window.show()?;
+    Ok(())
 }
 
-fn get_or_create_window(label: &str, app_handle: &AppHandle) -> window::Window {
+fn get_or_create_window(label: &str, app_handle: &AppHandle) -> Result<window::Window, Error> {
     let window = match app_handle.get_window(label) {
-        Some(w) => w,
+        Some(w) => Ok(w),
         None => {
             let window = match label {
                 "settings" => create_settings_window(app_handle),
-                "mini" => create_mini_window(app_handle),
-                _ => panic!("unknown window"),
+                "main" => create_main_window(app_handle),
+                _ => Err(Error::InvalidWindowLabel),
             };
 
             window
@@ -69,29 +86,35 @@ fn get_or_create_window(label: &str, app_handle: &AppHandle) -> window::Window {
     window
 }
 
-fn toggle_window(label: &str, app_handle: &AppHandle) {
-    let window = get_or_create_window(label, app_handle);
+fn toggle_window(label: &str, app_handle: &AppHandle) -> Result<(), Error> {
+    let window = app_handle.get_window(label);
 
-    let visible = match window.is_visible() {
-        Ok(v) => v,
-        Err(e) => panic!("error while getting window visibility: {}", e),
+    match window {
+        Some(w) => {
+            let visible = w.is_visible()?;
+
+            if visible {
+                w.hide()?;
+            } else {
+                w.show()?
+            }
+        }
+        None => show_or_create_window(label, app_handle)?,
     };
 
-    if visible {
-        window.hide().unwrap();
-    } else {
-        window.show().unwrap();
-    }
+    Ok(())
 }
 
 #[tauri::command]
-async fn show_or_create_window_cmd(handle: tauri::AppHandle, label: String) {
-    show_or_create_window(label.as_str(), &handle);
+async fn show_or_create_window_cmd(handle: tauri::AppHandle, label: String) -> Result<(), Error> {
+    show_or_create_window(label.as_str(), &handle)?;
+    Ok(())
 }
 
 #[tauri::command]
-async fn toggle_window_cmd(handle: tauri::AppHandle, label: String) {
-    toggle_window(label.as_str(), &handle);
+async fn toggle_window_cmd(handle: tauri::AppHandle, label: String) -> Result<(), Error> {
+    toggle_window(label.as_str(), &handle)?;
+    Ok(())
 }
 
 fn main() {
@@ -99,38 +122,45 @@ fn main() {
     let settings_item = CustomMenuItem::new("settings".to_string(), "Settings");
 
     let tray_menu = SystemTrayMenu::new()
-        .add_item(exit_item)
-        .add_item(settings_item);
+        .add_item(settings_item)
+        .add_item(exit_item);
 
     let system_tray = SystemTray::new().with_menu(tray_menu);
 
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
-        .plugin(tauri_plugin_window_state::Builder::default().build())
+        // .plugin(tauri_plugin_window_state::Builder::default().build())
+        .plugin(tauri_plugin_positioner::init())
         .invoke_handler(tauri::generate_handler![
             show_or_create_window_cmd,
             toggle_window_cmd
         ])
         .system_tray(system_tray)
-        .on_system_tray_event(|app, event| match event {
-            SystemTrayEvent::LeftClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                show_or_create_window("main", app);
-            }
-            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "settings" => {
-                    show_or_create_window("settings", app);
+        .on_system_tray_event(|app, event| {
+            tauri_plugin_positioner::on_tray_event(app, &event);
+
+            match event {
+                SystemTrayEvent::LeftClick {
+                    position: _,
+                    size: _,
+                    ..
+                } => {
+                    show_or_create_window("main", app).expect("main window can't be created");
                 }
-                "exit" => {
-                    app.save_window_state(StateFlags::all()).unwrap();
-                    std::process::exit(0);
-                }
+                SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+                    "settings" => {
+                        show_or_create_window("settings", app)
+                            .expect("settings window can't be created");
+                    }
+                    "exit" => {
+                        // app.save_window_state(StateFlags::all().difference(StateFlags::VISIBLE))
+                        //     .unwrap();
+                        std::process::exit(0);
+                    }
+                    _ => {}
+                },
                 _ => {}
-            },
-            _ => {}
+            }
         })
         .build(tauri::generate_context!())
         .expect("error while building tauri application");

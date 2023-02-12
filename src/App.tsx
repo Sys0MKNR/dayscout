@@ -1,10 +1,14 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo } from "react";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import "react-toastify/dist/ReactToastify.css";
 import { useSnapshot } from "valtio";
-import { state } from "./hooks/useSettings";
+import { listenToSettingsChange, state } from "./hooks/useSettings";
 import Splaschscreen from "@comp/Splaschscreen";
 
 const SettingsView = lazy(() => import("./views/SettingsView"));
@@ -15,10 +19,19 @@ const queryClient = new QueryClient();
 const Wrapper = () => {
   const snap = useSnapshot(state);
 
+  const clientQuery = useQueryClient();
+
   useLayoutEffect(() => {
     const html = document.querySelector("html");
     html?.setAttribute("data-theme", snap.settings.appearance.theme);
   }, [snap.settings.appearance.theme]);
+
+  useEffect(() => {
+    const unlisten = listenToSettingsChange();
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
 
   const view = useMemo(() => {
     const urlParams = new URLSearchParams(window.location.search);
