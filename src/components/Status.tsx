@@ -130,22 +130,36 @@ function Status(props: StatusProps) {
   });
 
   const textSize = useMemo(() => {
+    // scales
+    let mainScale = 0.4;
+    let deltaScale = 0.25;
+    let lastUpdatedScale = 0.15;
+
+    if (!props.appearance.showDelta) {
+      mainScale += 0.175;
+      lastUpdatedScale += 0.075;
+    }
+    if (!props.appearance.showLastUpdated) {
+      mainScale += 0.1;
+      deltaScale += 0.05;
+    }
+
     // status
 
-    let main = height * 0.4;
+    let main = height * mainScale;
 
     let scale = 1;
 
     if (main * 4 >= width) {
       main = width / 4;
-      scale = main / (height * 0.4);
+      scale = main / (height * mainScale);
     }
 
     // delta
-    const delta = height * 0.25 * scale;
+    const delta = height * deltaScale * scale;
 
     // last updated
-    const lastUpdated = height * 0.15 * scale;
+    const lastUpdated = height * lastUpdatedScale * scale;
 
     return {
       main,
