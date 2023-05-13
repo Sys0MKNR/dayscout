@@ -1,5 +1,5 @@
 import { emit, listen } from "@tauri-apps/api/event";
-import { z, ZodAny } from "zod";
+import { z } from "zod";
 
 import { Store } from "tauri-plugin-store-api";
 import { proxy } from "valtio";
@@ -144,7 +144,7 @@ const load = async (full = false) => {
   return s;
 };
 
-export const state = proxy({ settings: load(true) }); // maybe need to change
+export const state = proxy({ settings: load(true) });
 
 export const updateSettings = async (settings: Subset<ISettingsSchema>) => {
   const p = Object.entries(settings).map((s) => store.set(s[0], s[1]));
@@ -155,17 +155,9 @@ export const updateSettings = async (settings: Subset<ISettingsSchema>) => {
   emit("settings-updated");
 };
 
-// export function loadSettings() {
-//   state.settings = load();
-// }
-
 export function listenToSettingsChange() {
   return listen("settings-updated", () => {
     console.log("settings updated");
     state.settings = load();
   });
 }
-
-// (async () => {
-//   const unlisten =
-// })();

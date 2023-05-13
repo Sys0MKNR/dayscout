@@ -1,5 +1,4 @@
 import Navbar from "@comp/Navbar";
-import { useState } from "react";
 import Settings from "@comp/Settings/Settings";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -14,7 +13,6 @@ function SettingsView() {
 
         <main className="flex-1 overflow-y-auto p-5 h-[calc(100vh-64px)]">
           <Settings />
-          {/* {settingsActive ? <Settings /> : <MainView />} */}
         </main>
       </div>
       <ToastContainer />

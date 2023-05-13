@@ -1,4 +1,4 @@
-import { startTransition, Suspense, useMemo } from "react";
+import { Suspense, useMemo } from "react";
 
 import {
   useForm,
@@ -14,18 +14,13 @@ import { toast } from "react-toastify";
 import {
   ISettingsSchema,
   SettingsSchema,
-  ISettingOption,
-  ISettingsGroup,
   updateSettings,
   state,
-  Themes,
-  Positions,
 } from "@/hooks/useSettings";
 import { useSnapshot } from "valtio";
 import { getFromObj } from "@/lib/utils";
 import SettingsItem from "./SettingsItem";
 import Loader from "@comp/Loader";
-import { useQueryClient } from "@tanstack/react-query";
 import { SettingsOpts } from "./SettingsOpts";
 interface SettingsGroupProps {
   children: React.ReactNode;
@@ -85,7 +80,7 @@ function Settings() {
     fn();
   };
 
-  const onError: SubmitErrorHandler<ISettingsSchema> = (data) => {};
+  const onError: SubmitErrorHandler<ISettingsSchema> = () => {};
 
   if (!options) {
     return <div>Loading...</div>;

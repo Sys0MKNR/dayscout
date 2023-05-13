@@ -6,8 +6,8 @@ import { Refresh, Settings, X } from "tabler-icons-react";
 
 import { useQueryClient } from "@tanstack/react-query";
 
-import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
+import { toggleWindow } from "@/lib/internalApi";
 
 export interface StatusContainerProps extends StatusProps {
   toolbar?: boolean;
@@ -56,7 +56,7 @@ function StatusContainer(props: StatusContainerProps) {
   }, [props.appearance]);
 
   const toggleSettigns = async () => {
-    await invoke("toggle_window_cmd", { label: "settings" });
+    await toggleWindow("settings");
   };
 
   return (

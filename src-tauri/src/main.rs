@@ -6,7 +6,6 @@
 use tauri::{
     window, AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
 };
-// use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 
 #[derive(Debug, thiserror::Error)]
 enum Error {
@@ -37,7 +36,6 @@ fn create_settings_window(app_handle: &AppHandle) -> Result<window::Window, Erro
     .visible(false)
     .resizable(true)
     .decorations(true)
-    // .decorations(false)
     .title("dayscout settings")
     .build()?;
 
@@ -118,11 +116,17 @@ async fn toggle_window_cmd(handle: tauri::AppHandle, label: String) -> Result<()
 }
 
 fn main() {
-    let exit_item = CustomMenuItem::new("exit".to_string(), "Exit");
     let settings_item = CustomMenuItem::new("settings".to_string(), "Settings");
+    let refresh = CustomMenuItem::new("refresh".to_string(), "Refresh");
+    let show = CustomMenuItem::new("show".to_string(), "Show");
+    let hide = CustomMenuItem::new("hide".to_string(), "Hide");
+    let exit_item = CustomMenuItem::new("exit".to_string(), "Exit");
 
     let tray_menu = SystemTrayMenu::new()
         .add_item(settings_item)
+        .add_item(refresh)
+        .add_item(show)
+        .add_item(hide)
         .add_item(exit_item);
 
     let system_tray = SystemTray::new().with_menu(tray_menu);
@@ -152,15 +156,44 @@ fn main() {
                         show_or_create_window("settings", app)
                             .expect("settings window can't be created");
                     }
+                    "refresh" => {
+                        app.emit_all("settings-updated", ()).unwrap();
+                    }
+
+                    "show" => {
+                        show_or_create_window("main", app).unwrap();
+                    }
+
+                    "hide" => {
+                        let w = app.get_window("main");
+
+                        match w {
+                            Some(w) => {
+                                w.hide().unwrap();
+                            }
+                            None => {}
+                        }
+                    }
+
                     "exit" => {
-                        // app.save_window_state(StateFlags::all().difference(StateFlags::VISIBLE))
-                        //     .unwrap();
                         std::process::exit(0);
                     }
                     _ => {}
                 },
                 _ => {}
             }
+        })
+        .setup(|app| {
+            let w = app.get_window("main");
+
+            match w {
+                Some(w) => {
+                    w.set_resizable(true).unwrap();
+                }
+                None => {}
+            }
+
+            Ok(())
         })
         .build(tauri::generate_context!())
         .expect("error while building tauri application");

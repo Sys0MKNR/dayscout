@@ -75,8 +75,6 @@
         "decorations": false,
         "height": 200,
         "label": "main",
-        "minHeight": 200,
-        "minWidth": 200,
         "resizable": false,
         "skipTaskbar": true,
         "title": "dayscout",

@@ -1,6 +1,5 @@
 import hslToHex from "hsl-to-hex";
 
-// functions
 export function getFromObj<T>(
   obj: Record<string, unknown>,
   path: string,
@@ -102,8 +101,6 @@ export const range = (
 export function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-// types
 
 export type NestedKeyOf<ObjectType extends object> = {
   [Key in keyof ObjectType & (string | number)]: ObjectType[Key] extends object
