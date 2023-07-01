@@ -30,14 +30,20 @@ jobs:
         with:
           workspaces: "./src-tauri -> target"
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+          run_install: false
+
       - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
-          node-version: "lts/*"
+          node-version: "18"
           cache: "pnpm"
 
       - name: Install app dependencies and build web
-        run: pnpm
+        run: pnpm install --frozen-lockfile
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
