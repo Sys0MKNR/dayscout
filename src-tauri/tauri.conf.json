@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "dayscout",
-    "version": "0.0.2"
+    "version": "0.0.3"
   },
   "tauri": {
     "macOSPrivateApi": true,

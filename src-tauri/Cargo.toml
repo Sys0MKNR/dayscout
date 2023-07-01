@@ -1,6 +1,6 @@
 [package]
 name = "dayscout"
-version = "0.0.2"
+version = "0.0.3"
 description = "A Tauri App"
 authors = ["you"]
 license = ""
@@ -16,7 +16,7 @@ tauri-build = { version = "1.4", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.4", features = ["clipboard-all", "http-all", "system-tray", "window-all", "macos-private-api"] }
+tauri = { version = "1.4", features = ["clipboard-all", "http-all", "macos-private-api", "system-tray", "window-all"] }
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tauri-plugin-positioner = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["system-tray"] }
