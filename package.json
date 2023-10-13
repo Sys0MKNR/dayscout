@@ -12,10 +12,10 @@
     "lint": "prettier . --write && cd src/tauri && cargo clippy --fix"
   },
   "dependencies": {
-    "@hookform/resolvers": "^2.9.11",
+    "@hookform/resolvers": "^3.3.2",
     "@tanstack/react-query": "^4.36.1",
     "@tauri-apps/api": "^1.5.0",
-    "daisyui": "^2.52.0",
+    "daisyui": "^3.9.2",
     "dayjs": "^1.11.10",
     "hsl-to-hex": "^1.0.0",
     "react": "^18.2.0",

@@ -52,15 +52,15 @@ const PasswordInputElement = (
   const [showPassword, setShowPassword] = useState(false)
 
   return (
-    <div className="input-group w-full input-group-sm">
+    <div className="join w-full">
       <input
         {...props}
         {...register(props.name as any)}
         type={showPassword ? 'text' : 'password'}
-        className="input input-bordered w-full input-sm"
+        className="input input-bordered w-full input-sm join-item"
       />
       <button
-        className="btn btn-square swap btn-sm"
+        className="btn btn-square swap btn-sm join-item rounded-r-full"
         type="button"
         onClick={() => setShowPassword((p) => !p)}
       >
