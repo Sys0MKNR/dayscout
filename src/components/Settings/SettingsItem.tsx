@@ -34,6 +34,7 @@ const CheckBoxInputElement = (
     <input
       {...props}
       {...register(props.name as any)}
+      checked={watchCheck}
       className="toggle"
       type="checkbox"
     />
