@@ -1,9 +1,9 @@
-import { showOrCreateWindow } from "@/lib/internalApi";
-import { emit } from "@tauri-apps/api/event";
-import { ChevronUpRight, Refresh, X } from "tabler-icons-react";
+import { showOrCreateWindow } from '@/lib/internalApi'
+import { emit } from '@tauri-apps/api/event'
+import { ChevronUpRight, Refresh, X } from 'tabler-icons-react'
 
 export interface NavbarProps {
-  fullscreen?: boolean;
+  fullscreen?: boolean
 }
 
 function Navbar(props: NavbarProps) {
@@ -18,19 +18,19 @@ function Navbar(props: NavbarProps) {
       <div className="flex">
         <button
           className="btn btn-square btn-ghost"
-          onClick={() => showOrCreateWindow("main")}
+          onClick={() => showOrCreateWindow('main')}
         >
           <ChevronUpRight />
         </button>
         <button
           className="btn btn-square btn-ghost"
-          onClick={() => emit("status:forceRefresh")}
+          onClick={() => emit('status:forceRefresh')}
         >
           <Refresh />
         </button>
       </div>
     </header>
-  );
+  )
 }
 
-export default Navbar;
+export default Navbar

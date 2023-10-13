@@ -1,9 +1,9 @@
-import Navbar from "@comp/Navbar";
-import Settings from "@comp/Settings/Settings";
+import Navbar from '@comp/Navbar'
+import Settings from '@comp/Settings/Settings'
 
-import "react-toastify/dist/ReactToastify.css";
+import 'react-toastify/dist/ReactToastify.css'
 
-import { ToastContainer } from "react-toastify";
+import { ToastContainer } from 'react-toastify'
 
 function SettingsView() {
   return (
@@ -17,7 +17,7 @@ function SettingsView() {
       </div>
       <ToastContainer />
     </>
-  );
+  )
 }
 
-export default SettingsView;
+export default SettingsView

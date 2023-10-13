@@ -1,78 +1,78 @@
-import { emit, listen } from "@tauri-apps/api/event";
-import { z } from "zod";
+import { emit, listen } from '@tauri-apps/api/event'
+import { z } from 'zod'
 
-import { Store } from "tauri-plugin-store-api";
-import { proxy } from "valtio";
-import { NestedKeyOf, Subset, wait } from "@/lib/utils";
-import { ReactNode } from "react";
+import { Store } from 'tauri-plugin-store-api'
+import { proxy } from 'valtio'
+import { NestedKeyOf, Subset, wait } from '@/lib/utils'
+import { ReactNode } from 'react'
 
-import { Position } from "tauri-plugin-positioner-api";
+import { Position } from 'tauri-plugin-positioner-api'
 
 export const Themes: Readonly<[string, ...string[]]> = [
-  "acid",
-  "aqua",
-  "autumn",
-  "black",
-  "bumblebee",
-  "business",
-  "cmyk",
-  "coffee",
-  "corporate",
-  "cupcake",
-  "cyberpunk",
-  "dark",
-  "dracula",
-  "emerald",
-  "fantasy",
-  "forest",
-  "garden",
-  "halloween",
-  "lemonade",
-  "light",
-  "lofi",
-  "luxury",
-  "night",
-  "pastel",
-  "retro",
-  "synthwave",
-  "valentine",
-  "winter",
-  "wireframe",
-];
+  'acid',
+  'aqua',
+  'autumn',
+  'black',
+  'bumblebee',
+  'business',
+  'cmyk',
+  'coffee',
+  'corporate',
+  'cupcake',
+  'cyberpunk',
+  'dark',
+  'dracula',
+  'emerald',
+  'fantasy',
+  'forest',
+  'garden',
+  'halloween',
+  'lemonade',
+  'light',
+  'lofi',
+  'luxury',
+  'night',
+  'pastel',
+  'retro',
+  'synthwave',
+  'valentine',
+  'winter',
+  'wireframe',
+]
 
 function genPositions(): [string, number][] {
-  const TauriPositions = Object.entries(Position).slice(0, 9);
+  const TauriPositions = Object.entries(Position).slice(0, 9)
 
-  const Positions = [[-2, "Manual"], [-1, "Custom"], ...TauriPositions] as [
+  const Positions = [[-2, 'Manual'], [-1, 'Custom'], ...TauriPositions] as [
     string,
-    number
-  ][];
+    number,
+  ][]
 
-  return Positions;
+  return Positions
 }
 
-export const Positions = genPositions();
+export const Positions = genPositions()
 
 const HexColorSchema = z
   .string()
   .min(4)
   .max(9)
-  .startsWith("#")
-  .default("#000000");
+  .startsWith('#')
+  .default('#000000')
 
 const Overwrite = <T extends z.ZodTypeAny>(type: T) =>
   z.object({
     active: z.coerce.boolean().default(false),
     value: type,
-  });
+  })
 
 export const SettingsSchema = z.object({
-  url: z.string().default(""),
-  token: z.string().default(""),
+  url: z.string().default(''),
+  token: z.string().default(''),
   fetchInterval: z.coerce.number().default(2000),
   appearance: z
     .object({
-      theme: z.enum(Themes).default("forest"),
+      theme: z.enum(Themes).default('forest'),
       backgroundTransparency: z.coerce.number().min(0).max(100).default(100),
       nonInteractive: z.coerce.boolean().default(true),
       position: z.coerce.number().default(0),
@@ -106,58 +106,58 @@ export const SettingsSchema = z.object({
     .default({}),
 
   quitOnClose: z.coerce.boolean().default(false),
-});
+})
 
-export type ISettingsSchema = z.infer<typeof SettingsSchema>;
+export type ISettingsSchema = z.infer<typeof SettingsSchema>
 export interface ISettingsGroup {
-  name: string;
-  children: ISettingOption[];
+  name: string
+  children: ISettingOption[]
 }
 
 export interface ISettingOption {
-  name: NestedKeyOf<ISettingsSchema>;
-  label?: string;
-  placeholder?: string;
-  value?: string;
-  type?: string;
-  width?: string;
-  opts?: any;
-  children?: ReactNode;
-  customProps?: Record<string, any>;
-  stacked?: boolean;
-  className?: string;
+  name: NestedKeyOf<ISettingsSchema>
+  label?: string
+  placeholder?: string
+  value?: string
+  type?: string
+  width?: string
+  opts?: any
+  children?: ReactNode
+  customProps?: Record<string, any>
+  stacked?: boolean
+  className?: string
 }
 
-const store = new Store(".settings.dat");
+const store = new Store('.settings.dat')
 
 const load = async (full = false) => {
   if (full) {
     try {
-      await store.load();
+      await store.load()
     } catch (error) {}
   }
 
-  const entries = await store.entries();
+  const entries = await store.entries()
 
-  const s = SettingsSchema.parse(Object.fromEntries(entries));
+  const s = SettingsSchema.parse(Object.fromEntries(entries))
 
-  return s;
-};
+  return s
+}
 
-export const state = proxy({ settings: load(true) });
+export const state = proxy({ settings: load(true) })
 
 export const updateSettings = async (settings: Subset<ISettingsSchema>) => {
-  const p = Object.entries(settings).map((s) => store.set(s[0], s[1]));
-  await Promise.all(p);
+  const p = Object.entries(settings).map((s) => store.set(s[0], s[1]))
+  await Promise.all(p)
 
-  await store.save();
+  await store.save()
 
-  emit("settings-updated");
-};
+  emit('settings-updated')
+}
 
 export function listenToSettingsChange() {
-  return listen("settings-updated", () => {
-    console.log("settings updated");
-    state.settings = load();
-  });
+  return listen('settings-updated', () => {
+    console.log('settings updated')
+    state.settings = load()
+  })
 }

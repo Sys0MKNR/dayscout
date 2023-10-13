@@ -1,48 +1,48 @@
-import { range } from "@/lib/utils";
-import Status, { StatusProps } from "@comp/Status";
-import { appWindow } from "@tauri-apps/api/window";
-import { useEffect, useMemo } from "react";
-import { Refresh, Settings, X } from "tabler-icons-react";
+import { range } from '@/lib/utils'
+import Status, { StatusProps } from '@comp/Status'
+import { appWindow } from '@tauri-apps/api/window'
+import { useEffect, useMemo } from 'react'
+import { Refresh, Settings, X } from 'tabler-icons-react'
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from '@tanstack/react-query'
 
-import { listen } from "@tauri-apps/api/event";
-import { toggleWindow } from "@/lib/internalApi";
+import { listen } from '@tauri-apps/api/event'
+import { toggleWindow } from '@/lib/internalApi'
 
 export interface StatusContainerProps extends StatusProps {
-  toolbar?: boolean;
-  closeBtn?: boolean;
-  quitOnClose?: boolean;
+  toolbar?: boolean
+  closeBtn?: boolean
+  quitOnClose?: boolean
 }
 
 function StatusContainer(props: StatusContainerProps) {
-  console.log("statuscontainer");
-  const { toolbar = true, closeBtn = true } = props;
+  console.log('statuscontainer')
+  const { toolbar = true, closeBtn = true } = props
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const { overwrites, backgroundTransparency, nonInteractive } =
-    props.appearance;
+    props.appearance
 
   useEffect(() => {
-    const unlisten = listen("status:forceRefresh", () => {
-      console.log("force refresh");
-      queryClient.resetQueries();
-    });
+    const unlisten = listen('status:forceRefresh', () => {
+      console.log('force refresh')
+      queryClient.resetQueries()
+    })
     return () => {
-      unlisten.then((fn) => fn());
-    };
-  }, []);
+      unlisten.then((fn) => fn())
+    }
+  }, [])
 
   const bg = useMemo(() => {
     if (!overwrites.background.active) {
-      let color = "transparent";
+      let color = 'transparent'
 
       if (backgroundTransparency > 0) {
-        color = `hsl(var(--b1) / ${backgroundTransparency / 100})`;
+        color = `hsl(var(--b1) / ${backgroundTransparency / 100})`
       }
 
-      return color;
+      return color
     } else {
     }
 
@@ -50,14 +50,14 @@ function StatusContainer(props: StatusContainerProps) {
       range(0, 100, 0, 255, backgroundTransparency)
     )
       .toString(16)
-      .padStart(2, "0");
+      .padStart(2, '0')
 
-    return overwrites.background.value + transparency;
-  }, [props.appearance]);
+    return overwrites.background.value + transparency
+  }, [props.appearance])
 
   const toggleSettigns = async () => {
-    await toggleWindow("settings");
-  };
+    await toggleWindow('settings')
+  }
 
   return (
     <div
@@ -74,7 +74,7 @@ function StatusContainer(props: StatusContainerProps) {
           <button
             className="btn btn-ghost btn-sm"
             onClick={() => {
-              queryClient.resetQueries({ exact: true });
+              queryClient.resetQueries({ exact: true })
             }}
           >
             <Refresh></Refresh>
@@ -83,7 +83,7 @@ function StatusContainer(props: StatusContainerProps) {
           <button
             className="btn btn-ghost btn-sm"
             onClick={async () => {
-              toggleSettigns();
+              toggleSettigns()
             }}
           >
             <Settings></Settings>
@@ -93,9 +93,9 @@ function StatusContainer(props: StatusContainerProps) {
               className="btn btn-ghost btn-sm item text-right"
               onClick={() => {
                 if (props.quitOnClose) {
-                  appWindow.close();
+                  appWindow.close()
                 } else {
-                  appWindow.hide();
+                  appWindow.hide()
                 }
               }}
             >
@@ -107,7 +107,7 @@ function StatusContainer(props: StatusContainerProps) {
 
       <Status {...props} url={props.url}></Status>
     </div>
-  );
+  )
 }
 
-export default StatusContainer;
+export default StatusContainer

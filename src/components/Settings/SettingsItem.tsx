@@ -1,7 +1,7 @@
-import { ISettingOption } from "@/hooks/useSettings";
-import { DetailedHTMLProps, InputHTMLAttributes, useState } from "react";
-import { useFormContext } from "react-hook-form";
-import { Eye, EyeOff } from "tabler-icons-react";
+import { ISettingOption } from '@/hooks/useSettings'
+import { DetailedHTMLProps, InputHTMLAttributes, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
+import { Eye, EyeOff } from 'tabler-icons-react'
 
 const DefaultInputElement = (
   props: DetailedHTMLProps<
@@ -9,7 +9,7 @@ const DefaultInputElement = (
     HTMLInputElement
   >
 ) => {
-  const { register } = useFormContext();
+  const { register } = useFormContext()
 
   return (
     <input
@@ -17,8 +17,8 @@ const DefaultInputElement = (
       {...register(props.name as any)}
       className="input input-bordered input-sm w-full"
     />
-  );
-};
+  )
+}
 
 const CheckBoxInputElement = (
   props: DetailedHTMLProps<
@@ -26,9 +26,9 @@ const CheckBoxInputElement = (
     HTMLInputElement
   >
 ) => {
-  const { register, watch } = useFormContext();
+  const { register, watch } = useFormContext()
 
-  const watchCheck = watch(props.name as any, Boolean(props.defaultValue));
+  const watchCheck = watch(props.name as any, Boolean(props.defaultValue))
 
   return (
     <input
@@ -38,8 +38,8 @@ const CheckBoxInputElement = (
       className="toggle"
       type="checkbox"
     />
-  );
-};
+  )
+}
 
 const PasswordInputElement = (
   props: DetailedHTMLProps<
@@ -47,16 +47,16 @@ const PasswordInputElement = (
     HTMLInputElement
   >
 ) => {
-  const { register } = useFormContext();
+  const { register } = useFormContext()
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
 
   return (
     <div className="input-group w-full input-group-sm">
       <input
         {...props}
         {...register(props.name as any)}
-        type={showPassword ? "text" : "password"}
+        type={showPassword ? 'text' : 'password'}
         className="input input-bordered w-full input-sm"
       />
       <button
@@ -67,8 +67,8 @@ const PasswordInputElement = (
         {showPassword ? <EyeOff></EyeOff> : <Eye></Eye>}
       </button>
     </div>
-  );
-};
+  )
+}
 
 const ColorInputElement = (
   props: DetailedHTMLProps<
@@ -76,7 +76,7 @@ const ColorInputElement = (
     HTMLInputElement
   >
 ) => {
-  const { register } = useFormContext();
+  const { register } = useFormContext()
 
   return (
     <input
@@ -85,8 +85,8 @@ const ColorInputElement = (
       className="btn btn-sm"
       type="color"
     />
-  );
-};
+  )
+}
 
 const SelectInputElement = (
   props: DetailedHTMLProps<
@@ -94,7 +94,7 @@ const SelectInputElement = (
     HTMLSelectElement
   >
 ) => {
-  const { register } = useFormContext();
+  const { register } = useFormContext()
 
   return (
     <select
@@ -105,8 +105,8 @@ const SelectInputElement = (
       <option disabled>{props.placeholder}</option>
       {props.children}
     </select>
-  );
-};
+  )
+}
 
 const RangeInputElement = (
   props: DetailedHTMLProps<
@@ -114,7 +114,7 @@ const RangeInputElement = (
     HTMLInputElement
   >
 ) => {
-  const { register } = useFormContext();
+  const { register } = useFormContext()
 
   return (
     <input
@@ -123,54 +123,54 @@ const RangeInputElement = (
       className="range range-sm m-1"
       type="range"
     />
-  );
-};
+  )
+}
 
 function getInputElement(type: string) {
   switch (type) {
-    case "password":
-      return PasswordInputElement;
-    case "checkbox":
-      return CheckBoxInputElement;
-    case "color":
-      return ColorInputElement;
-    case "select":
-      return SelectInputElement;
-    case "range":
-      return RangeInputElement;
+    case 'password':
+      return PasswordInputElement
+    case 'checkbox':
+      return CheckBoxInputElement
+    case 'color':
+      return ColorInputElement
+    case 'select':
+      return SelectInputElement
+    case 'range':
+      return RangeInputElement
     default:
-      return DefaultInputElement;
+      return DefaultInputElement
   }
 }
 
 interface SettingsItemProps {
-  item: ISettingOption;
+  item: ISettingOption
 }
 
 const SettingsItem = (props: SettingsItemProps) => {
-  const { item } = props;
+  const { item } = props
   const {
     name,
     label,
     placeholder,
     value,
-    type = "text",
+    type = 'text',
     children,
     customProps,
     stacked = true,
     className,
-  } = item;
+  } = item
 
-  const Input = getInputElement(type);
+  const Input = getInputElement(type)
 
-  const orientation = stacked ? "flex-col" : "items-center";
+  const orientation = stacked ? 'flex-col' : 'items-center'
 
-  const margin = stacked ? "" : "mr-2";
+  const margin = stacked ? '' : 'mr-2'
 
   return (
     <div
       className={`${
-        item.width || "w-full"
+        item.width || 'w-full'
       } px-4 flex ${orientation} ${className}`}
     >
       <label htmlFor={name} className={`label ${margin}`}>
@@ -186,7 +186,7 @@ const SettingsItem = (props: SettingsItemProps) => {
         {...customProps}
       />
     </div>
-  );
-};
+  )
+}
 
-export default SettingsItem;
+export default SettingsItem

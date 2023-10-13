@@ -1,4 +1,4 @@
-import { Suspense, useMemo } from "react";
+import { Suspense, useMemo } from 'react'
 
 import {
   useForm,
@@ -6,25 +6,25 @@ import {
   UseFormRegister,
   FormProvider,
   SubmitErrorHandler,
-} from "react-hook-form";
+} from 'react-hook-form'
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from '@hookform/resolvers/zod'
 
-import { toast } from "react-toastify";
+import { toast } from 'react-toastify'
 import {
   ISettingsSchema,
   SettingsSchema,
   updateSettings,
   state,
-} from "@/hooks/useSettings";
-import { useSnapshot } from "valtio";
-import { getFromObj } from "@/lib/utils";
-import SettingsItem from "./SettingsItem";
-import Loader from "@comp/Loader";
-import { SettingsOpts } from "./SettingsOpts";
+} from '@/hooks/useSettings'
+import { useSnapshot } from 'valtio'
+import { getFromObj } from '@/lib/utils'
+import SettingsItem from './SettingsItem'
+import Loader from '@comp/Loader'
+import { SettingsOpts } from './SettingsOpts'
 interface SettingsGroupProps {
-  children: React.ReactNode;
-  name: string;
+  children: React.ReactNode
+  name: string
 }
 
 const SettingsGroup = (props: SettingsGroupProps) => {
@@ -33,57 +33,57 @@ const SettingsGroup = (props: SettingsGroupProps) => {
       <legend className="text-xl">{props.name}</legend>
       {props.children}
     </fieldset>
-  );
-};
+  )
+}
 
 function Settings() {
-  const snap = useSnapshot(state);
+  const snap = useSnapshot(state)
 
   const options = useMemo(() => {
-    const opts = SettingsOpts;
+    const opts = SettingsOpts
 
     for (const group of opts) {
       for (const option of group.children) {
-        const val = getFromObj<string>(snap.settings, option.name);
+        const val = getFromObj<string>(snap.settings, option.name)
 
-        option.value = val as any;
+        option.value = val as any
       }
     }
 
-    return opts;
-  }, [snap.settings]);
+    return opts
+  }, [snap.settings])
 
   const methods = useForm<ISettingsSchema>({
     resolver: zodResolver(SettingsSchema),
-  });
+  })
 
   const onValid: SubmitHandler<ISettingsSchema> = async (data) => {
     const fn = async () => {
-      await updateSettings(data);
+      await updateSettings(data)
 
-      methods.reset(data);
+      methods.reset(data)
 
-      toast.success("Settings Saved", {
-        position: "bottom-left",
+      toast.success('Settings Saved', {
+        position: 'bottom-left',
         autoClose: 500,
         hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: false,
         pauseOnFocusLoss: false,
         draggable: true,
-        theme: "colored",
-        toastId: "settings_saved",
-        className: "bg-success bg-base-content",
-      });
-    };
+        theme: 'colored',
+        toastId: 'settings_saved',
+        className: 'bg-success bg-base-content',
+      })
+    }
 
-    fn();
-  };
+    fn()
+  }
 
-  const onError: SubmitErrorHandler<ISettingsSchema> = () => {};
+  const onError: SubmitErrorHandler<ISettingsSchema> = () => {}
 
   if (!options) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   return (
@@ -95,10 +95,10 @@ function Settings() {
               return (
                 <SettingsGroup key={group.name} name={group.name}>
                   {group.children.map((item) => {
-                    return <SettingsItem key={item.name} item={item} />;
+                    return <SettingsItem key={item.name} item={item} />
                   })}
                 </SettingsGroup>
-              );
+              )
             })}
 
             <div className="w-full sticky -bottom-5 py-3 flex justify-end bg-base-100">
@@ -108,7 +108,7 @@ function Settings() {
                 onClick={() => {
                   methods.reset(SettingsSchema.parse({}), {
                     keepDefaultValues: true,
-                  });
+                  })
                 }}
               >
                 Defaults
@@ -134,7 +134,7 @@ function Settings() {
         </FormProvider>
       </div>
     </Suspense>
-  );
+  )
 }
 
-export default Settings;
+export default Settings
