@@ -68,20 +68,14 @@ fn show_or_create_window(label: &str, app_handle: &AppHandle) -> Result<(), Erro
 }
 
 fn get_or_create_window(label: &str, app_handle: &AppHandle) -> Result<window::Window, Error> {
-    let window = match app_handle.get_window(label) {
+    match app_handle.get_window(label) {
         Some(w) => Ok(w),
-        None => {
-            let window = match label {
-                "settings" => create_settings_window(app_handle),
-                "main" => create_main_window(app_handle),
-                _ => Err(Error::InvalidWindowLabel),
-            };
-
-            window
-        }
-    };
-
-    window
+        None => match label {
+            "settings" => create_settings_window(app_handle),
+            "main" => create_main_window(app_handle),
+            _ => Err(Error::InvalidWindowLabel),
+        },
+    }
 }
 
 fn toggle_window(label: &str, app_handle: &AppHandle) -> Result<(), Error> {
@@ -167,11 +161,8 @@ fn main() {
                     "hide" => {
                         let w = app.get_window("main");
 
-                        match w {
-                            Some(w) => {
-                                w.hide().unwrap();
-                            }
-                            None => {}
+                        if let Some(w) = w {
+                            w.hide().unwrap();
                         }
                     }
 
@@ -186,11 +177,8 @@ fn main() {
         .setup(|app| {
             let w = app.get_window("main");
 
-            match w {
-                Some(w) => {
-                    w.set_resizable(true).unwrap();
-                }
-                None => {}
+            if let Some(w) = w {
+                w.set_resizable(true).unwrap();
             }
 
             Ok(())
