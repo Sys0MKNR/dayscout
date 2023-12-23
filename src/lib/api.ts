@@ -4,7 +4,8 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 
 dayjs.extend(relativeTime)
 
-import { fetch } from '@tauri-apps/api/http'
+import { http } from '@tauri-apps/api'
+const fetch = http.fetch
 
 const URL_STATUS = '/api/v2/properties'
 const URL_SETTINGS = '/api/v1/status'

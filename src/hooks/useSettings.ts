@@ -1,4 +1,6 @@
-import { emit, listen } from '@tauri-apps/api/event'
+import { event } from '@tauri-apps/api'
+const { emit, listen } = event
+
 import { z } from 'zod'
 
 import { Store } from 'tauri-plugin-store-api'

@@ -70,19 +70,6 @@
     "updater": {
       "active": false
     },
-    "windows": [
-      {
-        "alwaysOnTop": true,
-        "decorations": false,
-        "height": 200,
-        "label": "main",
-        "resizable": false,
-        "skipTaskbar": true,
-        "title": "dayscout",
-        "transparent": true,
-        "url": "/index.html?v=main",
-        "width": 200
-      }
-    ]
+    "windows": []
   }
 }

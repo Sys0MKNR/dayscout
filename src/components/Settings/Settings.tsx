@@ -22,6 +22,8 @@ import { getFromObj } from '@/lib/utils'
 import SettingsItem from './SettingsItem'
 import Loader from '@comp/Loader'
 import { SettingsOpts } from './SettingsOpts'
+import Autocomplete from '@comp/Autocomplete'
+import { useState } from 'react'
 interface SettingsGroupProps {
   children: React.ReactNode
   name: string
@@ -38,6 +40,8 @@ const SettingsGroup = (props: SettingsGroupProps) => {
 
 function Settings() {
   const snap = useSnapshot(state)
+
+  const [window, setWindow] = useState('')
 
   const options = useMemo(() => {
     const opts = SettingsOpts
@@ -89,6 +93,18 @@ function Settings() {
   return (
     <Suspense fallback={<Loader />}>
       <div className="">
+        <SettingsGroup key={'windows'} name={'Windows'}>
+          <Autocomplete
+            showNew={true}
+            onNew={(val) => {
+              console.log(val)
+            }}
+            items={['main', 'settings', 'about', 'help', 'logs']}
+            value={window}
+            onChange={setWindow}
+          ></Autocomplete>
+        </SettingsGroup>
+
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onValid, onError)}>
             {options.map((group) => {

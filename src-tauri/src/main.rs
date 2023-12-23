@@ -3,6 +3,8 @@
     windows_subsystem = "windows"
 )]
 
+use std::vec;
+
 use tauri::{
     window, AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
 };
@@ -46,7 +48,7 @@ fn create_main_window(app_handle: &AppHandle) -> Result<window::Window, Error> {
     let window = tauri::WindowBuilder::new(
         app_handle,
         "main",
-        tauri::WindowUrl::App("index.html?a=main".into()),
+        tauri::WindowUrl::App("index.html?v=main".into()),
     )
     .fullscreen(false)
     .inner_size(200.0, 200.0)
@@ -56,6 +58,7 @@ fn create_main_window(app_handle: &AppHandle) -> Result<window::Window, Error> {
     .transparent(true)
     .visible(false)
     .decorations(false)
+    .always_on_top(true)
     .build()?;
 
     Ok(window)
@@ -123,6 +126,8 @@ fn main() {
         .add_item(hide)
         .add_item(exit_item);
 
+    let windows: Vec<tauri::Window> = vec![];
+
     let system_tray = SystemTray::new().with_menu(tray_menu);
 
     let app = tauri::Builder::default()
@@ -175,12 +180,12 @@ fn main() {
             }
         })
         .setup(|app| {
-            let w = app.get_window("main");
-
-            if let Some(w) = w {
-                w.set_resizable(true).unwrap();
-            }
-
+            show_or_create_window("main", &(app.app_handle()))
+                .expect("main window can't be created");
+            // let w = app.get_window("main");
+            // if let Some(w) = w {
+            //     w.set_resizable(true).unwrap();
+            // }
             Ok(())
         })
         .build(tauri::generate_context!())
