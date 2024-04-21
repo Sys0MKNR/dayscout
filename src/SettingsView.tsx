@@ -4,6 +4,8 @@ import Settings from '@comp/Settings/Settings'
 import 'react-toastify/dist/ReactToastify.css'
 
 import { ToastContainer } from 'react-toastify'
+import { Outlet } from 'react-router-dom'
+import { Breadcrumbs } from '@comp/Breadcrumps'
 
 function SettingsView() {
   return (
@@ -11,8 +13,10 @@ function SettingsView() {
       <div className="h-screen transition-all">
         <Navbar></Navbar>
 
-        <main className="flex-1 overflow-y-auto p-5 h-[calc(100vh-64px)]">
-          <Settings />
+        <Breadcrumbs />
+
+        <main className="flex-1 p-5 h-[calc(100vh-120px)]">
+          <Outlet></Outlet>
         </main>
       </div>
       <ToastContainer />

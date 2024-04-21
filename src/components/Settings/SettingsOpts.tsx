@@ -1,9 +1,18 @@
-import { ISettingsGroup, Positions, Themes } from '@/hooks/useSettings'
+import { IProfileSchema } from '@/state/settings/profile'
+import { Positions, Themes } from '@/state/settings/utils'
+import { FormFieldOptionGroup } from '@comp/Form/FormField'
 
-export const SettingsOpts: ISettingsGroup[] = [
+export const SettingsOpts: FormFieldOptionGroup<IProfileSchema>[] = [
   {
     name: 'General',
     children: [
+      {
+        name: 'name',
+        label: 'Name',
+        placeholder: 'Enter Name...',
+        type: 'text',
+        width: 'w-1/2',
+      },
       {
         name: 'url',
         label: 'Url',
@@ -154,7 +163,7 @@ export const SettingsOpts: ISettingsGroup[] = [
         label: 'Background',
         placeholder: ' ',
         type: 'checkbox',
-        width: 'w-1/4',
+        width: 'w-48',
         stacked: false,
         className: 'justify-between',
       },
@@ -163,7 +172,7 @@ export const SettingsOpts: ISettingsGroup[] = [
         label: ' ',
         placeholder: '',
         type: 'color',
-        width: 'w-3/4',
+        width: 'w-20',
         stacked: false,
       },
 
@@ -172,7 +181,7 @@ export const SettingsOpts: ISettingsGroup[] = [
         label: 'Ok',
         placeholder: ' ',
         type: 'checkbox',
-        width: 'w-1/4',
+        width: 'w-48',
         stacked: false,
         className: 'justify-between',
       },
@@ -181,7 +190,7 @@ export const SettingsOpts: ISettingsGroup[] = [
         label: ' ',
         placeholder: '',
         type: 'color',
-        width: 'w-3/4',
+        width: 'w-20',
         stacked: false,
       },
       {
@@ -189,7 +198,7 @@ export const SettingsOpts: ISettingsGroup[] = [
         label: 'Warn',
         placeholder: ' ',
         type: 'checkbox',
-        width: 'w-1/4',
+        width: 'w-48',
         stacked: false,
         className: 'justify-between',
       },
@@ -198,7 +207,7 @@ export const SettingsOpts: ISettingsGroup[] = [
         label: ' ',
         placeholder: '',
         type: 'color',
-        width: 'w-3/4',
+        width: 'w-20',
         stacked: false,
       },
       {
@@ -206,7 +215,7 @@ export const SettingsOpts: ISettingsGroup[] = [
         label: 'Urgent',
         placeholder: ' ',
         type: 'checkbox',
-        width: 'w-1/4',
+        width: 'w-48',
         stacked: false,
         className: 'justify-between',
       },
@@ -215,7 +224,7 @@ export const SettingsOpts: ISettingsGroup[] = [
         label: ' ',
         placeholder: '',
         type: 'color',
-        width: 'w-3/4',
+        width: 'w-20',
         stacked: false,
       },
     ],
@@ -235,28 +244,28 @@ export const SettingsOpts: ISettingsGroup[] = [
         label: 'High',
         placeholder: 'Enter high...',
         type: 'number',
-        width: 'w-1/4',
+        width: 'w-48',
       },
       {
         name: 'thresholds.targetTop',
         label: 'Target Top',
         placeholder: 'Enter target top...',
         type: 'number',
-        width: 'w-1/4',
+        width: 'w-48',
       },
       {
         name: 'thresholds.targetBottom',
         label: 'Target Bottom',
         placeholder: 'Enter target bottom...',
         type: 'number',
-        width: 'w-1/4',
+        width: 'w-48',
       },
       {
         name: 'thresholds.low',
         label: 'Low',
         placeholder: 'Enter low...',
         type: 'number',
-        width: 'w-1/4',
+        width: 'w-48',
       },
     ],
   },

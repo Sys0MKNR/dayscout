@@ -1,18 +1,5 @@
 import { useMemo, useRef } from 'react'
-import {
-  ArrowDown,
-  ArrowDownRight,
-  ArrowNarrowRight,
-  ArrowsDown,
-  ArrowsUp,
-  ArrowUp,
-  ArrowUpRight,
-  ChevronsDown,
-  ChevronsUp,
-  Icon as IIcon,
-  Minus,
-  X,
-} from 'tabler-icons-react'
+
 import { ISettingsSchema } from '@/hooks/useSettings'
 import Loader from './Loader'
 
@@ -24,20 +11,33 @@ import {
   IGetSettingsArgs,
   IGetStatusArgs,
 } from '@/lib/api'
+import {
+  IconArrowDown,
+  IconArrowDownRight,
+  IconArrowNarrowRight,
+  IconArrowsDown,
+  IconArrowsUp,
+  IconArrowUp,
+  IconArrowUpRight,
+  IconChevronsDown,
+  IconChevronsUp,
+  IconMinus,
+  IconX,
+} from '@tabler/icons-react'
 
 const directionMap: Record<string, IIcon | null> = {
   NONE: null,
-  TripleUp: ChevronsUp,
-  DoubleUp: ArrowsUp,
-  SingleUp: ArrowUp,
-  FortyFiveUp: ArrowUpRight,
-  Flat: ArrowNarrowRight,
-  FortyFiveDown: ArrowDownRight,
-  SingleDown: ArrowDown,
-  DoubleDown: ArrowsDown,
-  TripleDown: ChevronsDown,
-  'NOT COMPUTABLE': Minus,
-  'RATE OUT OF RANGE': X,
+  TripleUp: IconChevronsUp,
+  DoubleUp: IconArrowsUp,
+  SingleUp: IconArrowUp,
+  FortyFiveUp: IconArrowUpRight,
+  Flat: IconArrowNarrowRight,
+  FortyFiveDown: IconArrowDownRight,
+  SingleDown: IconArrowDown,
+  DoubleDown: IconArrowsDown,
+  TripleDown: IconChevronsDown,
+  'NOT COMPUTABLE': IconMinus,
+  'RATE OUT OF RANGE': IconX,
 }
 
 const textSizesDefault = {
@@ -180,7 +180,7 @@ function Status(props: StatusProps) {
     }
     return (
       <div className="text-4xl text-center underline flex h-full justify-center items-center text-error">
-        <X size={height} />
+        <IconX size={height} />
       </div>
     )
   } else if (isLoading) {

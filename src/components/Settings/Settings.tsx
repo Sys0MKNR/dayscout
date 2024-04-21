@@ -24,6 +24,7 @@ import Loader from '@comp/Loader'
 import { SettingsOpts } from './SettingsOpts'
 import Autocomplete from '@comp/Autocomplete'
 import { useState } from 'react'
+import { Modal } from '@comp/Modal'
 interface SettingsGroupProps {
   children: React.ReactNode
   name: string
@@ -46,16 +47,25 @@ function Settings() {
   const options = useMemo(() => {
     const opts = SettingsOpts
 
+    const s = snap.settings.find((s) => s.name === window)
+    console.log(snap.settings)
+
+    console.log(s, window)
+
+    if (!s) {
+      return []
+    }
+
     for (const group of opts) {
       for (const option of group.children) {
-        const val = getFromObj<string>(snap.settings, option.name)
+        const val = getFromObj<string>(s, option.name)
 
         option.value = val as any
       }
     }
 
     return opts
-  }, [snap.settings])
+  }, [snap.settings, window])
 
   const methods = useForm<ISettingsSchema>({
     resolver: zodResolver(SettingsSchema),
@@ -63,7 +73,7 @@ function Settings() {
 
   const onValid: SubmitHandler<ISettingsSchema> = async (data) => {
     const fn = async () => {
-      await updateSettings(data)
+      await updateSettings(window, data)
 
       methods.reset(data)
 
@@ -93,16 +103,44 @@ function Settings() {
   return (
     <Suspense fallback={<Loader />}>
       <div className="">
-        <SettingsGroup key={'windows'} name={'Windows'}>
+        <SettingsGroup key={'w'} name={'w'}>
           <Autocomplete
-            showNew={true}
-            onNew={(val) => {
-              console.log(val)
-            }}
-            items={['main', 'settings', 'about', 'help', 'logs']}
-            value={window}
-            onChange={setWindow}
+            items={['tset', 'tes']}
+            createNew={true}
+            className={'w-32'}
           ></Autocomplete>
+        </SettingsGroup>
+        <SettingsGroup key={'windows'} name={'Windows'}>
+          <div className="w-full flex gap-4">
+            <div className="grow">
+              <select className="select select-bordered select-sm w-full ">
+                <option disabled>{'Choose Window'}</option>
+
+                {snap.settings.map((s) => {
+                  return (
+                    <option
+                      key={s.name}
+                      value={s.name}
+                      onClick={() => {
+                        setWindow(s.name)
+                      }}
+                    >
+                      {s.name}
+                    </option>
+                  )
+                })}
+              </select>
+            </div>
+            <div className="join grow">
+              <input
+                className="input input-sm input-bordered join-item w-full"
+                placeholder="New..."
+              />
+              <button className="btn join-item rounded-r-full btn-sm btn-primary">
+                +
+              </button>
+            </div>
+          </div>
         </SettingsGroup>
 
         <FormProvider {...methods}>

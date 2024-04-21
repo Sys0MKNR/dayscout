@@ -2,12 +2,12 @@ import { range } from '@/lib/utils'
 import Status, { StatusProps } from '@comp/Status'
 import { appWindow } from '@tauri-apps/api/window'
 import { useEffect, useMemo } from 'react'
-import { Refresh, Settings, X } from 'tabler-icons-react'
 
 import { useQueryClient } from '@tanstack/react-query'
 
 import { listen } from '@tauri-apps/api/event'
 import { toggleWindow } from '@/lib/internalApi'
+import { IconRefresh, IconSettings, IconX } from '@tabler/icons-react'
 
 export interface StatusContainerProps extends StatusProps {
   toolbar?: boolean
@@ -77,7 +77,7 @@ function StatusContainer(props: StatusContainerProps) {
               queryClient.resetQueries({ exact: true })
             }}
           >
-            <Refresh></Refresh>
+            <IconRefresh />
           </button>
 
           <button
@@ -86,7 +86,7 @@ function StatusContainer(props: StatusContainerProps) {
               toggleSettigns()
             }}
           >
-            <Settings></Settings>
+            <IconSettings />
           </button>
           {closeBtn && (
             <button
@@ -99,7 +99,7 @@ function StatusContainer(props: StatusContainerProps) {
                 }
               }}
             >
-              <X></X>
+              <IconX />
             </button>
           )}
         </div>

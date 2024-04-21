@@ -30,7 +30,7 @@ fn create_settings_window(app_handle: &AppHandle) -> Result<window::Window, Erro
     let window = tauri::WindowBuilder::new(
         app_handle,
         "settings",
-        tauri::WindowUrl::App("index.html?v=settings".into()),
+        tauri::WindowUrl::App("/settings".into()),
     )
     .fullscreen(false)
     .inner_size(800.0, 600.0)
@@ -45,21 +45,18 @@ fn create_settings_window(app_handle: &AppHandle) -> Result<window::Window, Erro
 }
 
 fn create_main_window(app_handle: &AppHandle) -> Result<window::Window, Error> {
-    let window = tauri::WindowBuilder::new(
-        app_handle,
-        "main",
-        tauri::WindowUrl::App("index.html?v=main".into()),
-    )
-    .fullscreen(false)
-    .inner_size(200.0, 200.0)
-    .resizable(false)
-    .skip_taskbar(true)
-    .title("dayscout")
-    .transparent(true)
-    .visible(false)
-    .decorations(false)
-    .always_on_top(true)
-    .build()?;
+    let window =
+        tauri::WindowBuilder::new(app_handle, "main", tauri::WindowUrl::App("/main".into()))
+            .fullscreen(false)
+            .inner_size(200.0, 200.0)
+            .resizable(false)
+            .skip_taskbar(true)
+            .title("dayscout")
+            .transparent(true)
+            .visible(false)
+            .decorations(false)
+            .always_on_top(true)
+            .build()?;
 
     Ok(window)
 }
@@ -180,8 +177,8 @@ fn main() {
             }
         })
         .setup(|app| {
-            show_or_create_window("main", &(app.app_handle()))
-                .expect("main window can't be created");
+            // show_or_create_window("main", &(app.app_handle()))
+            //     .expect("main window can't be created");
             // let w = app.get_window("main");
             // if let Some(w) = w {
             //     w.set_resizable(true).unwrap();

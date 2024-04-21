@@ -1,7 +1,12 @@
-import { ISettingOption } from '@/hooks/useSettings'
-import { DetailedHTMLProps, InputHTMLAttributes, useState } from 'react'
+import { NestedKeyOf } from '@/lib/utils'
+import { IconEye, IconEyeOff } from '@tabler/icons-react'
+import {
+  DetailedHTMLProps,
+  InputHTMLAttributes,
+  ReactNode,
+  useState,
+} from 'react'
 import { useFormContext } from 'react-hook-form'
-import { Eye, EyeOff } from 'tabler-icons-react'
 
 const DefaultInputElement = (
   props: DetailedHTMLProps<
@@ -64,7 +69,7 @@ const PasswordInputElement = (
         type="button"
         onClick={() => setShowPassword((p) => !p)}
       >
-        {showPassword ? <EyeOff></EyeOff> : <Eye></Eye>}
+        {showPassword ? <IconEyeOff /> : <IconEye />}
       </button>
     </div>
   )
@@ -143,11 +148,30 @@ function getInputElement(type: string) {
   }
 }
 
-interface SettingsItemProps {
-  item: ISettingOption
+export interface FormFieldOptionGroup<T extends object> {
+  name: string
+  children: FormFieldOptions<T>[]
 }
 
-const SettingsItem = (props: SettingsItemProps) => {
+export interface FormFieldOptions<T extends object> {
+  name: NestedKeyOf<T>
+  label?: string
+  placeholder?: string
+  value?: string
+  type?: string
+  width?: string
+  opts?: any
+  children?: ReactNode
+  customProps?: Record<string, any>
+  stacked?: boolean
+  className?: string
+}
+
+interface FormFieldProps<T extends object> {
+  item: FormFieldOptions<T>
+}
+
+export function FormField<T extends object>(props: FormFieldProps<T>) {
   const { item } = props
   const {
     name,
@@ -171,7 +195,7 @@ const SettingsItem = (props: SettingsItemProps) => {
     <div
       className={`${
         item.width || 'w-full'
-      } px-4 flex ${orientation} ${className}`}
+      } px-4 flex ${orientation} ${className || ''}`}
     >
       <label htmlFor={name} className={`label ${margin}`}>
         <span className="label-text text-base min-h-6">{label || name}</span>
@@ -188,5 +212,3 @@ const SettingsItem = (props: SettingsItemProps) => {
     </div>
   )
 }
-
-export default SettingsItem
