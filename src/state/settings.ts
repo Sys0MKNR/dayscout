@@ -1,124 +1,42 @@
-import { proxy, subscribe } from 'valtio'
-import { IProfileSchema, ProfileSchema } from './profile'
-import { IWindowSchema, WindowSchema } from './window'
-import { uniqueNameInZodArray } from './utils'
-import { z } from 'zod'
-import { Store } from 'tauri-plugin-store-api'
-import { derive } from 'derive-valtio'
+import { IProfileSchema } from '@/types/profile'
 import {
   ISettingsSchema,
-  SettingsSchema,
   ISettingsSchemaBase,
   SettingsSchemaBase,
-} from './settings'
-
+} from '@/types/settings'
+import { IWindowSchema } from '@/types/window'
 import { event } from '@tauri-apps/api'
-const { emit, listen } = event
-
-// store.onKeyChange('settings', (value) => {
-//   const settings = SettingsSchema.parse(value)
-//   state.profile = settings.profile
-//   state.window = settings.window
-// })
-
-// const load = async (full = false) => {
-//   if (full) {
-//     try {
-//       await store.load()
-//     } catch (error) {}
-//   }
-
-//   const settings = await store.get('settings')
-
-//   const s = SettingsSchema.parse(settings)
-
-//   // const entries = await store.entries()
-
-//   // const s = entries.map(([_, value]) => ProfileSchema.parse(value))
-
-//   // if (s.length === 0) {
-//   //   const defaultSettings = ProfileSchema.parse({ default: true })
-//   //   await store.set('default', defaultSettings)
-//   //   await store.save()
-//   //   return [defaultSettings]
-//   // }
-
-//   console.log('settings loaded', s)
-
-//   return s
-// }
-
-const store = new Store('.settings.json')
+import { derive } from 'derive-valtio'
+import { proxy, subscribe } from 'valtio'
+import { loadSettingsFromStore, store } from './store'
 
 interface SettingsState {
+  ready: boolean
   data: ISettingsSchema
   unsubscribe: () => void
 }
 
 const state = proxy<SettingsState>({
+  ready: false,
   data: { profile: [], window: [] },
   unsubscribe: () => {},
 })
 
-async function load() {
-  const data = await store.get('settings')
-
-  console.log('data', data)
-
-  let s = null
-
-  if (data) {
-    s = SettingsSchema.parse(data)
-  } else {
-    const defaultProfile = ProfileSchema.parse({
-      name: 'Default Profile',
-    })
-
-    const defaultWindow = WindowSchema.parse({
-      name: 'Default Window',
-      profile: defaultProfile.id,
-    })
-
-    s = SettingsSchema.parse({
-      profile: [defaultProfile],
-      window: [defaultWindow],
-    })
-
-    await store.set('settings', s)
-    await store.save()
-  }
-
-  console.log('settings loaded', s)
-
-  return s
-
-  // state.profile = s.profile
-  // state.window = s.window
-}
-
 async function init() {
-  const s = await load()
-
-  state.data = s
+  const s = await loadSettingsFromStore()
 
   const unsubStoreUpdates = subscribe(state, async () => {
     store.set('settings', state.data)
     await store.save()
     console.log('settings saved', state.data)
-    // emit('settings-updated')
+    event.emit('settings-updated', state.data)
   })
 
-  const unsubGlobalUpdates = await listen('settings-updated', async () => {
-    // const s = await load()
-    // state.data = s
-  })
-
-  const unsubscribe = () => {
+  state.data = s
+  state.ready = true
+  state.unsubscribe = () => {
     unsubStoreUpdates()
-    unsubGlobalUpdates()
   }
-
-  return unsubscribe
 }
 
 const $ = derive({
@@ -221,7 +139,6 @@ export const settings = {
   duplicate,
   get,
   getIndex,
-  load,
   remove,
   state,
   update,

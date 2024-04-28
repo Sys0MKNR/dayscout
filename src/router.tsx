@@ -6,75 +6,66 @@ import { SettingsIndexView } from '@/views/Settings/Index'
 import SettingsView from './SettingsView'
 import { ProfileView } from './views/Settings/Profile'
 import { WindowView } from './views/Settings/Window'
-import { availableMonitors } from '@tauri-apps/api/window'
 import { settings } from './state/settings'
-import { ThemeProvider } from '@comp/ThemeProvider'
 
 export const router = createBrowserRouter([
   {
-    element: <ThemeProvider />,
+    path: '/main',
+    element: <MainView />,
+  },
+  {
+    id: 'settings',
+    path: '/settings',
+    element: <SettingsView />,
+    handle: {
+      crumb: () => <Link to="/settings">Home</Link>,
+    },
     children: [
       {
-        path: '/main',
-        element: <MainView />,
+        index: true,
+        element: <SettingsIndexView />,
       },
       {
-        id: 'settings',
-        path: '/settings',
-        element: <SettingsView />,
+        path: 'window',
         handle: {
-          crumb: () => <Link to="/settings">Home</Link>,
+          crumb: (data: any) => <Link to="/settings/window">Windows</Link>,
         },
         children: [
           {
+            element: <WindowsView />,
             index: true,
-            element: <SettingsIndexView />,
           },
           {
-            path: 'window',
-            handle: {
-              crumb: (data: any) => <Link to="/settings/window">Windows</Link>,
-            },
-            children: [
-              {
-                element: <WindowsView />,
-                index: true,
-              },
-              {
-                path: ':id',
-                element: <WindowView />,
+            path: ':id',
+            element: <WindowView />,
 
-                handle: {
-                  crumb: (data: any, params: any) => {
-                    return <span>{settings.get('window', params.id).name}</span>
-                  },
-                },
+            handle: {
+              crumb: (data: any, params: any) => {
+                return <span>{settings.get('window', params.id).name}</span>
               },
-            ],
+            },
           },
+        ],
+      },
 
+      {
+        path: 'profile',
+        handle: {
+          crumb: (data: any) => <Link to="/settings/profile">Profile</Link>,
+        },
+        children: [
           {
-            path: 'profile',
+            element: <ProfilesView />,
+            index: true,
+          },
+          {
+            path: ':id',
+            element: <ProfileView />,
             handle: {
-              crumb: (data: any) => <Link to="/settings/profile">Profile</Link>,
+              crumb: (data: any, params: any) => {
+                return <span>{settings.get('profile', params.id).name}</span>
+              },
             },
-            children: [
-              {
-                element: <ProfilesView />,
-                index: true,
-              },
-              {
-                path: ':id',
-                element: <ProfileView />,
-                handle: {
-                  crumb: (data: any, params: any) => {
-                    return (
-                      <span>{settings.get('profile', params.id).name}</span>
-                    )
-                  },
-                },
-              },
-            ],
           },
         ],
       },

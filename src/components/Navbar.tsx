@@ -1,9 +1,6 @@
 import { showOrCreateWindow } from '@/lib/internalApi'
 import { emit } from '@tauri-apps/api/event'
 
-import { useLocation, NavLink } from 'react-router-dom'
-import { useMemo } from 'react'
-import classNames from 'classnames'
 import { IconChevronUpRight, IconRefresh } from '@tabler/icons-react'
 export interface NavbarProps {
   fullscreen?: boolean

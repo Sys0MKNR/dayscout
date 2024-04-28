@@ -8,8 +8,9 @@ import { useEffect } from 'react'
 import { appWindow, LogicalPosition, LogicalSize } from '@tauri-apps/api/window'
 
 import { moveWindow } from 'tauri-plugin-positioner-api'
-import { settings } from '@/state/settings'
 import { useSearchParams } from 'react-router-dom'
+import { status } from '@/state/status'
+import { setWindowTheme } from '@/lib/utils'
 
 function MainView() {
   return (
@@ -20,17 +21,24 @@ function MainView() {
 }
 
 function Wrapper() {
+  const snap = useSnapshot(status.state)
   let [searchParams, setSearchParams] = useSearchParams()
 
   const profileId = searchParams.get('profile')
 
   if (!profileId) {
-    return 'No theme selected'
+    return 'No profile found'
   }
 
-  const profile = settings.get('profile', profileId)
-
   const updateWindow = async () => {
+    const profile = status.state.profile
+
+    if (!profile) {
+      return
+    }
+
+    setWindowTheme(profile.appearance.theme)
+
     await appWindow.setIgnoreCursorEvents(profile.appearance.nonInteractive)
 
     await appWindow.setSize(
@@ -50,9 +58,17 @@ function Wrapper() {
 
   useEffect(() => {
     updateWindow()
-  }, [profile])
+  }, [status.state.profile])
 
-  return <StatusContainer {...profile} />
+  useEffect(() => {
+    status.init(profileId)
+  }, [profileId])
+
+  if (!snap.profile) {
+    return null
+  }
+
+  return <StatusContainer {...snap.profile} />
 }
 
 export default MainView

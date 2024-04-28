@@ -1,10 +1,11 @@
-import { ISettingsSchema } from '@/hooks/useSettings'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 dayjs.extend(relativeTime)
 
 import { http } from '@tauri-apps/api'
+import { ISettingsSchema } from '@/types/settings'
+import { IProfileSchema } from '@/types/profile'
 const fetch = http.fetch
 
 const URL_STATUS = '/api/v2/properties'
@@ -13,7 +14,7 @@ const URL_SETTINGS = '/api/v1/status'
 export interface IGetStatusArgs {
   url: string
   token: string
-  thresholds: ISettingsSchema['thresholds']
+  thresholds: IProfileSchema['thresholds']
 }
 
 export interface IStatus {
@@ -73,17 +74,19 @@ export const getStatus = async (args: IGetStatusArgs) => {
   return s
 }
 
-export interface IGetSettingsArgs {
+export interface IGetProfileArgs {
   url: string
   token: string
 }
 
-export interface INSSettings {
-  thresholds: ISettingsSchema['thresholds']
+export interface INSSProfile {
+  thresholds: IProfileSchema['thresholds']
 }
 
-export const getSettings = async (args: IGetSettingsArgs) => {
+export const getProfile = async (args: IGetProfileArgs) => {
   const { url, token } = args
+
+  console.log(URL_SETTINGS, url)
 
   const statusURL = new URL(URL_SETTINGS, url)
   statusURL.searchParams.append('token', token)
@@ -99,7 +102,7 @@ export const getSettings = async (args: IGetSettingsArgs) => {
 
   const thresholds = data.settings.thresholds
 
-  const settings: INSSettings = {
+  const settings: INSSProfile = {
     thresholds: {
       high: thresholds.bgHigh,
       low: thresholds.bgLow,

@@ -29,6 +29,7 @@ tauri-plugin-positioner = { git = "https://github.com/tauri-apps/plugins-workspa
   "system-tray",
 ] }
 thiserror = "1.0.38"
+itertools = "0.12.1"
 
 [features]
 # by default Tauri runs in production mode

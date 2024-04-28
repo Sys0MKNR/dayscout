@@ -117,3 +117,8 @@ export type Subset<K> = {
         ? Subset<K[attr]> | null | undefined
         : K[attr]
 }
+
+export function setWindowTheme(theme: string) {
+  const html = document.querySelector('html')
+  html?.setAttribute('data-theme', theme)
+}

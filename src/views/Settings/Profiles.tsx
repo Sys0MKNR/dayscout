@@ -1,7 +1,6 @@
 import { settings } from '@/state/settings'
-import { IProfileSchema } from '@/state/settings/profile'
 import { IconPlus } from '@tabler/icons-react'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useSnapshot } from 'valtio'
 
 export function ProfilesView() {

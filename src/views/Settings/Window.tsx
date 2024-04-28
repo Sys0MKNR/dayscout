@@ -1,30 +1,14 @@
 import { useDuplicate, useOnValid, useRemove } from '@/hooks/useActions'
 import { settings } from '@/state/settings'
-import { IWindowSchema, WindowSchema } from '@/state/settings/window'
+import { IWindowSchema, WindowSchema } from '@/types/window'
 import { FormActions } from '@comp/Form/FormActions'
 import { FormGroup } from '@comp/FormGroup'
-import Loader from '@comp/Loader'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  IconCopy,
-  IconDeviceFloppy,
-  IconRestore,
-  IconTrash,
-} from '@tabler/icons-react'
 import { Monitor, availableMonitors } from '@tauri-apps/api/window'
 import { useEffect, useState } from 'react'
-import {
-  FormProvider,
-  SubmitErrorHandler,
-  SubmitHandler,
-  useForm,
-} from 'react-hook-form'
-import { useLoaderData, useNavigate, useParams } from 'react-router-dom'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
 import { useSnapshot } from 'valtio'
-
-interface LoaderData {
-  monitors: Monitor[]
-}
 
 export function WindowView() {
   const { id } = useParams()

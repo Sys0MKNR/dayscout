@@ -27,34 +27,32 @@ const queryClient = new QueryClient()
 //     }
 //   }, [])
 
-const SettingsProvider = (props: { children: ReactNode }) => {
-  const [loading, setLoading] = useState(true)
+// const SettingsProvider = (props: { children: ReactNode }) => {
+//   const [loading, setLoading] = useState(true)
 
-  const load = async () => {
-    await settings.init()
-    setLoading(false)
-  }
+//   const load = async () => {
+//     await settings.init()
+//     setLoading(false)
+//   }
 
-  useEffect(() => {
-    load()
-    return settings.state.unsubscribe
-  }, [])
+//   useEffect(() => {
+//     load()
+//     return settings.state.unsubscribe
+//   }, [])
 
-  if (loading) {
-    return <Loader />
-  }
+//   if (loading) {
+//     return <Loader />
+//   }
 
-  return props.children
-}
+//   return props.children
+// }
 
 function App() {
   return (
-    <Suspense fallback={'loading...'}>
-      <SettingsProvider>
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} fallbackElement={<Splaschscreen />} />
-        </QueryClientProvider>
-      </SettingsProvider>
+    <Suspense fallback={<Loader />}>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} fallbackElement={<Splaschscreen />} />
+      </QueryClientProvider>
     </Suspense>
   )
 }

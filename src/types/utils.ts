@@ -1,8 +1,6 @@
 import { Position } from 'tauri-plugin-positioner-api'
 import { z } from 'zod'
 
-import { availableMonitors } from '@tauri-apps/api/window'
-
 export const Themes: Readonly<[string, ...string[]]> = [
   'acid',
   'aqua',
@@ -70,8 +68,4 @@ export function uniqueNameInZodArray(key: string = 'id') {
     fn,
     { message: `Values of property ${key} in array have to be unique` },
   ] as const
-}
-
-export async function getMonitors() {
-  const monitors = await availableMonitors()
 }

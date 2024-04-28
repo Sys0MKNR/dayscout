@@ -1,18 +1,16 @@
 import { useDuplicate, useOnValid, useRemove } from '@/hooks/useActions'
 import { getFromObj } from '@/lib/utils'
 import { settings } from '@/state/settings'
-import { IProfileSchema, ProfileSchema } from '@/state/settings/profile'
-import { IWindowSchema } from '@/state/settings/window'
+import { IProfileSchema, ProfileSchema } from '@/types/profile'
 import { FormActions } from '@comp/Form/FormActions'
 import { FormField } from '@comp/Form/FormField'
 import { FormGroup } from '@comp/FormGroup'
-import Loader from '@comp/Loader'
 import { SettingsOpts } from '@comp/Settings/SettingsOpts'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Monitor, availableMonitors } from '@tauri-apps/api/window'
+import { availableMonitors } from '@tauri-apps/api/window'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
-import { useLoaderData, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 export function ProfileView() {
   const { id } = useParams()
@@ -41,7 +39,6 @@ export function ProfileView() {
   }, [id])
 
   if (profile === null) {
-    // return <Loader />
     return null
   } else if (profile === false) {
     return <div>Not Found</div>

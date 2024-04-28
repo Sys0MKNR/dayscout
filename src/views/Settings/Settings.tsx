@@ -1,5 +1,4 @@
 import Navbar from '@comp/Navbar'
-import Settings from '@comp/Settings/Settings'
 import { Outlet } from 'react-router-dom'
 
 import 'react-toastify/dist/ReactToastify.css'

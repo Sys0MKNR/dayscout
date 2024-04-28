@@ -3,188 +3,182 @@
     windows_subsystem = "windows"
 )]
 
-use std::vec;
+use std::collections::HashMap;
+use std::path::PathBuf;
 
-use tauri::{
-    window, AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
-};
+use serde::{Deserialize, Serialize};
+use tauri::{AppHandle, Manager, Window};
 
-#[derive(Debug, thiserror::Error)]
-enum Error {
-    #[error(transparent)]
-    Tauri(#[from] tauri::Error),
-    #[error("unknown window label")]
-    InvalidWindowLabel,
+use tauri::Wry;
+use tauri_plugin_store::{with_store, StoreCollection};
+
+mod cmd;
+mod tray;
+mod utils;
+mod window;
+
+use cmd::{show_or_create_window_cmd, toggle_window_cmd, update_settings_cmd};
+use tray::{create_tray, handle_tray};
+
+use utils::Error;
+use window::{create_main_window, create_settings_window};
+#[derive(Serialize, Deserialize, Clone)]
+struct SettingsWindow {
+    id: String,
+    name: String,
+    profile: Option<String>,
+    monitor: Option<String>,
+    enabled: bool,
 }
 
-impl serde::Serialize for Error {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::ser::Serializer,
-    {
-        serializer.serialize_str(self.to_string().as_ref())
-    }
+#[derive(Serialize, Deserialize)]
+struct Settings {
+    window: Vec<SettingsWindow>,
 }
 
-fn create_settings_window(app_handle: &AppHandle) -> Result<window::Window, Error> {
-    let window = tauri::WindowBuilder::new(
-        app_handle,
-        "settings",
-        tauri::WindowUrl::App("/settings".into()),
-    )
-    .fullscreen(false)
-    .inner_size(800.0, 600.0)
-    .transparent(false)
-    .visible(false)
-    .resizable(true)
-    .decorations(true)
-    .title("dayscout settings")
-    .build()?;
+fn load_setings(handle: AppHandle) -> Result<Settings, Error> {
+    let stores = handle.state::<StoreCollection<Wry>>();
+    let path = PathBuf::from(".settings.json");
 
-    Ok(window)
-}
+    let settings = with_store(handle.clone(), stores, path.clone(), |store| {
+        let settings = store.get("settings");
 
-fn create_main_window(app_handle: &AppHandle) -> Result<window::Window, Error> {
-    let window =
-        tauri::WindowBuilder::new(app_handle, "main", tauri::WindowUrl::App("/main".into()))
-            .fullscreen(false)
-            .inner_size(200.0, 200.0)
-            .resizable(false)
-            .skip_taskbar(true)
-            .title("dayscout")
-            .transparent(true)
-            .visible(false)
-            .decorations(false)
-            .always_on_top(true)
-            .build()?;
-
-    Ok(window)
-}
-
-fn show_or_create_window(label: &str, app_handle: &AppHandle) -> Result<(), Error> {
-    let window = get_or_create_window(label, app_handle)?;
-    window.show()?;
-    Ok(())
-}
-
-fn get_or_create_window(label: &str, app_handle: &AppHandle) -> Result<window::Window, Error> {
-    match app_handle.get_window(label) {
-        Some(w) => Ok(w),
-        None => match label {
-            "settings" => create_settings_window(app_handle),
-            "main" => create_main_window(app_handle),
-            _ => Err(Error::InvalidWindowLabel),
-        },
-    }
-}
-
-fn toggle_window(label: &str, app_handle: &AppHandle) -> Result<(), Error> {
-    let window = app_handle.get_window(label);
-
-    match window {
-        Some(w) => {
-            let visible = w.is_visible()?;
-
-            if visible {
-                w.hide()?;
-            } else {
-                w.show()?
+        match settings {
+            Some(s) => {
+                let settings: Settings = serde_json::from_value(s.clone())?;
+                Ok(settings)
             }
+            None => Err(tauri_plugin_store::Error::NotFound(path.clone())),
         }
-        None => show_or_create_window(label, app_handle)?,
-    };
+    });
 
-    Ok(())
+    match settings {
+        Ok(s) => Ok(s),
+        Err(e) => Err(Error::from(e)),
+    }
 }
 
-#[tauri::command]
-async fn show_or_create_window_cmd(handle: tauri::AppHandle, label: String) -> Result<(), Error> {
-    show_or_create_window(label.as_str(), &handle)?;
-    Ok(())
-}
+fn update_windows(handle: AppHandle) {
+    let settings = load_setings(handle.clone()).unwrap();
 
-#[tauri::command]
-async fn toggle_window_cmd(handle: tauri::AppHandle, label: String) -> Result<(), Error> {
-    toggle_window(label.as_str(), &handle)?;
-    Ok(())
+    let mut windows: HashMap<String, Window> = handle.windows();
+    windows.remove("settings");
+
+    settings.window.iter().for_each(|sw| {
+        if !sw.enabled {
+            return;
+        }
+
+        let w = match handle.get_window(sw.id.as_str()) {
+            Some(w) => {
+                windows.remove(sw.id.as_str());
+                w
+            }
+            None => {
+                let profile: String = sw.profile.clone().unwrap_or("".to_string());
+                create_main_window(sw.id.as_str(), profile.as_str(), &handle).unwrap()
+            }
+        };
+
+        w.show().unwrap();
+        // w.emit("settings", sw).unwrap();
+    });
+
+    windows.iter().for_each(|w| {
+        w.1.close().unwrap();
+    });
+
+    //     // println!("settings: {:?}", settings);
+    // }
+
+    // handle.windows().iter().for_each(|item| {
+    //     let w: &tauri::Window = item.1;
+
+    //     println!("window: {:?}", w.label());
+
+    //     let early_return = match w.label() {
+    //         "settings" => true,
+    //         _ => false,
+    //     };
+
+    //     if early_return {
+    //         return;
+    //     }
+
+    //     let index = settings.window.iter().position(|sw| sw.id == w.label());
+
+    //     match index {
+    //         Some(i) => {
+    //             let s = settings.window[i].clone();
+    //             settings.window.remove(i);
+
+    //             if s.enabled {
+    //                 let profile: String = s.profile.clone().unwrap_or("".to_string());
+
+    //                 let params = HashMap::from([("profile".to_string(), profile.as_str())]);
+
+    //                 show_or_create_window(w.label(), &handle, Some(params)).unwrap();
+    //             } else {
+    //                 w.close().unwrap();
+    //             }
+    //         }
+    //         None => {
+    //             w.close().unwrap();
+    //         }
+    //     }
 }
 
 fn main() {
-    let settings_item = CustomMenuItem::new("settings".to_string(), "Settings");
-    let refresh = CustomMenuItem::new("refresh".to_string(), "Refresh");
-    let show = CustomMenuItem::new("show".to_string(), "Show");
-    let hide = CustomMenuItem::new("hide".to_string(), "Hide");
-    let exit_item = CustomMenuItem::new("exit".to_string(), "Exit");
-
-    let tray_menu = SystemTrayMenu::new()
-        .add_item(settings_item)
-        .add_item(refresh)
-        .add_item(show)
-        .add_item(hide)
-        .add_item(exit_item);
-
-    let windows: Vec<tauri::Window> = vec![];
-
-    let system_tray = SystemTray::new().with_menu(tray_menu);
+    let tray = create_tray();
 
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
-        // .plugin(tauri_plugin_window_state::Builder::default().build())
         .plugin(tauri_plugin_positioner::init())
-        .invoke_handler(tauri::generate_handler![
-            show_or_create_window_cmd,
-            toggle_window_cmd
-        ])
-        .system_tray(system_tray)
-        .on_system_tray_event(|app, event| {
-            tauri_plugin_positioner::on_tray_event(app, &event);
-
-            match event {
-                SystemTrayEvent::LeftClick {
-                    position: _,
-                    size: _,
-                    ..
-                } => {
-                    show_or_create_window("main", app).expect("main window can't be created");
-                }
-                SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                    "settings" => {
-                        show_or_create_window("settings", app)
-                            .expect("settings window can't be created");
-                    }
-                    "refresh" => {
-                        app.emit_all("settings-updated", ()).unwrap();
-                    }
-
-                    "show" => {
-                        show_or_create_window("main", app).unwrap();
-                    }
-
-                    "hide" => {
-                        let w = app.get_window("main");
-
-                        if let Some(w) = w {
-                            w.hide().unwrap();
-                        }
-                    }
-
-                    "exit" => {
-                        std::process::exit(0);
-                    }
-                    _ => {}
-                },
-                _ => {}
-            }
-        })
+        .system_tray(tray)
+        .on_system_tray_event(handle_tray)
         .setup(|app| {
-            // show_or_create_window("main", &(app.app_handle()))
-            //     .expect("main window can't be created");
-            // let w = app.get_window("main");
-            // if let Some(w) = w {
-            //     w.set_resizable(true).unwrap();
-            // }
+            let handle = app.handle();
+
+            let w = create_settings_window(&handle).unwrap();
+
+            w.show().unwrap();
+
+            app.listen_global("settings-updated", move |event| {
+                update_windows(handle.clone());
+            });
+            //     let mut settings: Settings =
+            //         serde_json::from_str(event.payload().unwrap()).unwrap();
+
+            //     // handle.windows().iter().for_each(|w| {
+            //     //     if w.1.label() == "settings" {
+            //     //         return;
+            //     //     }
+
+            //     //     w.1.close().unwrap();
+            //     // });
+
+            //     // handle.windows().iter().for_each(|w| {
+            //     //     println!("window: {:?}", w.1.label());
+            //     // });
+
+            //     // settings.window.iter().for_each(|s| {
+            //     //     if s.enabled {
+            //     //         let profile: String = s.profile.clone().unwrap_or("".to_string());
+
+            //     //         let params = HashMap::from([("profile".to_string(), profile.as_str())]);
+
+            //     //         show_or_create_window(s.id.as_str(), &handle, Some(params)).unwrap();
+            //     //     }
+            //     // });
+            // });
+
             Ok(())
         })
+        .invoke_handler(tauri::generate_handler![
+            show_or_create_window_cmd,
+            toggle_window_cmd,
+            update_settings_cmd,
+        ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");
 

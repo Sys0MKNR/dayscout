@@ -1,14 +1,13 @@
-import { useMemo, useRef } from 'react'
+import { ReactNode, useMemo, useRef } from 'react'
 
-import { ISettingsSchema } from '@/hooks/useSettings'
 import Loader from './Loader'
 
 import { useQuery } from '@tanstack/react-query'
 
 import {
-  getSettings,
+  getProfile,
   getStatus,
-  IGetSettingsArgs,
+  IGetProfileArgs,
   IGetStatusArgs,
 } from '@/lib/api'
 import {
@@ -24,8 +23,9 @@ import {
   IconMinus,
   IconX,
 } from '@tabler/icons-react'
+import { IProfileSchema } from '@/types/profile'
 
-const directionMap: Record<string, IIcon | null> = {
+const directionMap: Record<string, typeof IconChevronsUp | null> = {
   NONE: null,
   TripleUp: IconChevronsUp,
   DoubleUp: IconArrowsUp,
@@ -55,10 +55,10 @@ const textSizesFullScreen = {
 }
 
 export interface StatusProps {
-  appearance: ISettingsSchema['appearance']
+  appearance: IProfileSchema['appearance']
   url: string
   token: string
-  thresholds: ISettingsSchema['thresholds']
+  thresholds: IProfileSchema['thresholds']
   fetchThresholds?: boolean
   fetchInterval?: number
 }
@@ -84,7 +84,7 @@ function Status(props: StatusProps) {
     queryFn: async ({ queryKey }) => {
       console.log('settings fetch')
       return fetchThresholds
-        ? await getSettings(queryKey[1] as IGetSettingsArgs)
+        ? await getProfile(queryKey[1] as IGetProfileArgs)
         : { thresholds: thresholds }
     },
     retry: 2,

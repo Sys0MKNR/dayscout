@@ -1,0 +1,110 @@
+#![cfg_attr(
+    all(not(debug_assertions), target_os = "windows"),
+    windows_subsystem = "windows"
+)]
+
+use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
+use tauri::Manager;
+
+mod cmd;
+mod tray;
+mod utils;
+mod window;
+
+use cmd::{show_or_create_window_cmd, toggle_window_cmd};
+use tray::{create_tray, handle_tray};
+
+use crate::window::show_or_create_window;
+
+#[derive(Serialize, Deserialize, Clone)]
+struct SettingsWindow {
+    id: String,
+    name: String,
+    profile: Option<String>,
+    monitor: Option<String>,
+    enabled: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Settings {
+    window: Vec<SettingsWindow>,
+}
+
+fn main() {
+    let tray = create_tray();
+
+    let app = tauri::Builder::default()
+        .plugin(tauri_plugin_store::Builder::default().build())
+        .plugin(tauri_plugin_positioner::init())
+        .system_tray(tray)
+        .on_system_tray_event(handle_tray)
+        .setup(|app| {
+            let handle = app.handle();
+            app.listen_global("settings-updated", move |event| {
+                let mut settings: Settings =
+                    serde_json::from_str(event.payload().unwrap()).unwrap();
+
+                handle.windows().iter().for_each(|item| {
+                    let w: &tauri::Window = item.1;
+
+                    println!("window: {:?}", w.label());
+
+                    let early_return = match w.label() {
+                        "settings" => true,
+                        _ => false,
+                    };
+
+                    if early_return {
+                        return;
+                    }
+
+                    let index = settings.window.iter().position(|sw| sw.id == w.label());
+
+                    // xs.remove(index);
+
+                    match index {
+                        Some(i) => {
+                            let s = settings.window[i].clone();
+                            settings.window.remove(i);
+
+                            if s.enabled {
+                                let profile: String = s.profile.clone().unwrap_or("".to_string());
+
+                                let params =
+                                    HashMap::from([("profile".to_string(), profile.as_str())]);
+
+                                show_or_create_window(w.label(), &handle, Some(params)).unwrap();
+                            } else {
+                                w.close().unwrap();
+                            }
+                        }
+                        None => {
+                            w.close().unwrap();
+                        }
+                    }
+                });
+
+                settings.window.iter().for_each(|s| {
+                    if s.enabled {
+                        let profile: String = s.profile.clone().unwrap_or("".to_string());
+
+                        let params = HashMap::from([("profile".to_string(), profile.as_str())]);
+
+                        show_or_create_window(s.id.as_str(), &handle, Some(params)).unwrap();
+                    }
+                });
+            });
+
+            Ok(())
+        })
+        .invoke_handler(tauri::generate_handler![
+            show_or_create_window_cmd,
+            toggle_window_cmd
+        ])
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application");
+
+    app.run(|_app_handle, _event| {});
+}

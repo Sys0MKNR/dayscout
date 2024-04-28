@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "mock": "ts-node-esm --project tsconfig.node.json ./test/mock/mockServer.ts",
-    "lint": "prettier . --write && cd src/tauri && cargo clippy --fix"
+    "lint": "prettier . --write && cd src-tauri && cargo clippy --fix"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",

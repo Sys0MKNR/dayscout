@@ -1,5 +1,5 @@
 import { settings } from '@/state/settings'
-import { ISettingsSchemaBase } from '@/state/settings/settings'
+import { ISettingsSchemaBase } from '@/types/settings'
 import { useEffect } from 'react'
 import { SubmitErrorHandler, SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'

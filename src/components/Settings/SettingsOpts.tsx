@@ -1,5 +1,5 @@
-import { IProfileSchema } from '@/state/settings/profile'
-import { Positions, Themes } from '@/state/settings/utils'
+import { IProfileSchema } from '@/types/profile'
+import { Positions, Themes } from '@/types/utils'
 import { FormFieldOptionGroup } from '@comp/Form/FormField'
 
 export const SettingsOpts: FormFieldOptionGroup<IProfileSchema>[] = [
