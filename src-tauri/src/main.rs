@@ -21,7 +21,7 @@ use cmd::{show_or_create_window_cmd, toggle_window_cmd, update_settings_cmd};
 use tray::{create_tray, handle_tray};
 
 use utils::Error;
-use window::{create_main_window, create_settings_window};
+use window::create_main_window;
 #[derive(Serialize, Deserialize, Clone)]
 struct SettingsWindow {
     id: String,
@@ -74,58 +74,26 @@ fn update_windows(handle: AppHandle) {
                 windows.remove(sw.id.as_str());
                 w
             }
-            None => {
-                let profile: String = sw.profile.clone().unwrap_or("".to_string());
-                create_main_window(sw.id.as_str(), profile.as_str(), &handle).unwrap()
-            }
+            None => create_main_window(sw.id.as_str(), &handle).unwrap(),
         };
 
         w.show().unwrap();
-        // w.emit("settings", sw).unwrap();
+
+        let js = format!(
+            "const urlParams = new URLSearchParams(window.location.search);
+             urlParams.set('profile', '{}'); 
+             urlParams.set('window', '{}');         
+             window.location.search = urlParams;",
+            sw.profile.clone().unwrap_or("".to_string()),
+            sw.id.clone()
+        );
+
+        w.eval(js.as_str()).unwrap();
     });
 
     windows.iter().for_each(|w| {
         w.1.close().unwrap();
     });
-
-    //     // println!("settings: {:?}", settings);
-    // }
-
-    // handle.windows().iter().for_each(|item| {
-    //     let w: &tauri::Window = item.1;
-
-    //     println!("window: {:?}", w.label());
-
-    //     let early_return = match w.label() {
-    //         "settings" => true,
-    //         _ => false,
-    //     };
-
-    //     if early_return {
-    //         return;
-    //     }
-
-    //     let index = settings.window.iter().position(|sw| sw.id == w.label());
-
-    //     match index {
-    //         Some(i) => {
-    //             let s = settings.window[i].clone();
-    //             settings.window.remove(i);
-
-    //             if s.enabled {
-    //                 let profile: String = s.profile.clone().unwrap_or("".to_string());
-
-    //                 let params = HashMap::from([("profile".to_string(), profile.as_str())]);
-
-    //                 show_or_create_window(w.label(), &handle, Some(params)).unwrap();
-    //             } else {
-    //                 w.close().unwrap();
-    //             }
-    //         }
-    //         None => {
-    //             w.close().unwrap();
-    //         }
-    //     }
 }
 
 fn main() {
@@ -139,38 +107,14 @@ fn main() {
         .setup(|app| {
             let handle = app.handle();
 
-            let w = create_settings_window(&handle).unwrap();
+            // let w = create_settings_window(&handle).unwrap();
+            // w.show().unwrap();
 
-            w.show().unwrap();
-
-            app.listen_global("settings-updated", move |event| {
+            app.listen_global("settings-updated", move |_| {
                 update_windows(handle.clone());
             });
-            //     let mut settings: Settings =
-            //         serde_json::from_str(event.payload().unwrap()).unwrap();
 
-            //     // handle.windows().iter().for_each(|w| {
-            //     //     if w.1.label() == "settings" {
-            //     //         return;
-            //     //     }
-
-            //     //     w.1.close().unwrap();
-            //     // });
-
-            //     // handle.windows().iter().for_each(|w| {
-            //     //     println!("window: {:?}", w.1.label());
-            //     // });
-
-            //     // settings.window.iter().for_each(|s| {
-            //     //     if s.enabled {
-            //     //         let profile: String = s.profile.clone().unwrap_or("".to_string());
-
-            //     //         let params = HashMap::from([("profile".to_string(), profile.as_str())]);
-
-            //     //         show_or_create_window(s.id.as_str(), &handle, Some(params)).unwrap();
-            //     //     }
-            //     // });
-            // });
+            update_windows(app.handle());
 
             Ok(())
         })

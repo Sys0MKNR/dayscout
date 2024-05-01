@@ -1,5 +1,7 @@
 use tauri::{AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
+use crate::{update_windows, window::show_or_create_window};
+
 // use crate::window::show_or_create_window;
 
 pub fn create_tray() -> SystemTray {
@@ -19,37 +21,30 @@ pub fn create_tray() -> SystemTray {
     SystemTray::new().with_menu(tray_menu)
 }
 
-pub fn handle_tray(app: &AppHandle, event: SystemTrayEvent) {
-    tauri_plugin_positioner::on_tray_event(app, &event);
+pub fn handle_tray(handle: &AppHandle, event: SystemTrayEvent) {
+    tauri_plugin_positioner::on_tray_event(handle, &event);
 
     match event {
         SystemTrayEvent::LeftClick {
             position: _,
             size: _,
             ..
-        } => {
-            // show_or_create_window("main", app).expect("main window can't be created");
-        }
-
+        } => update_windows(handle.clone()),
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-            // "settings" => {
-            //     show_or_create_window("settings", app, None)
-            //         .expect("settings window can't be created");
-            // }
-            // // "refresh" => {
-            // //     app.emit_all("settings-updated", ()).unwrap();
-            // // }
-
-            // // "show" => {
-            // //     show_or_create_window("main", app).unwrap();
-            // // }
-            // "hide" => {
-            //     let w = app.get_window("main");
-
-            //     if let Some(w) = w {
-            //         w.hide().unwrap();
-            //     }
-            // }
+            "settings" => {
+                show_or_create_window("settings", handle, None)
+                    .expect("settings window can't be created");
+            }
+            "refresh" => update_windows(handle.clone()),
+            "show" => update_windows(handle.clone()),
+            "hide" => {
+                handle.windows().iter().for_each(|w| {
+                    if w.0 == "main" {
+                        return;
+                    }
+                    w.1.hide().unwrap();
+                });
+            }
             "exit" => {
                 std::process::exit(0);
             }

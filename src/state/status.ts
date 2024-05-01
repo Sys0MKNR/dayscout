@@ -19,7 +19,7 @@ const state = proxy<StatusState>({
   unsubscribe: () => {},
 })
 
-async function init(profile: string) {
+async function init(profile: string, window: string) {
   const settings = await loadSettingsFromStore()
 
   const p = settings.profile.find((p) => p.id === profile)
@@ -29,6 +29,15 @@ async function init(profile: string) {
   }
 
   state.profile = p
+
+  const w = settings.window.find((w) => w.id === window)
+
+  if (!w) {
+    throw new Error('Window not found')
+  }
+
+  state.window = w
+
   if (!state.ready) {
     state.ready = true
   }
