@@ -206,9 +206,10 @@ export function FormField<T extends object>(props: FormFieldProps<T>) {
         type={type}
         placeholder={placeholder || name}
         defaultValue={value}
-        children={children}
         {...customProps}
-      />
+      >
+        {children}
+      </Input>
     </div>
   )
 }

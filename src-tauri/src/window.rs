@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use tauri::{window, AppHandle, Manager};
 
 use crate::utils::Error;
@@ -39,21 +37,13 @@ pub fn create_main_window(label: &str, app_handle: &AppHandle) -> Result<window:
     Ok(window)
 }
 
-pub fn show_or_create_window(
-    label: &str,
-    app_handle: &AppHandle,
-    params: Option<HashMap<String, &str>>,
-) -> Result<window::Window, Error> {
-    let window: tauri::Window = get_or_create_window(label, app_handle, params)?;
+pub fn show_or_create_window(label: &str, app_handle: &AppHandle) -> Result<window::Window, Error> {
+    let window: tauri::Window = get_or_create_window(label, app_handle)?;
     window.show()?;
     Ok(window)
 }
 
-pub fn get_or_create_window(
-    label: &str,
-    app_handle: &AppHandle,
-    params: Option<HashMap<String, &str>>,
-) -> Result<window::Window, Error> {
+pub fn get_or_create_window(label: &str, app_handle: &AppHandle) -> Result<window::Window, Error> {
     match app_handle.get_window(label) {
         Some(w) => Ok(w),
         None => match label {
@@ -73,7 +63,7 @@ pub fn toggle_window(label: &str, app_handle: &AppHandle) -> Result<window::Wind
             }
             w
         }
-        None => show_or_create_window(label, app_handle, None)?,
+        None => show_or_create_window(label, app_handle)?,
     };
 
     Ok(window)

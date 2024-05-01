@@ -7,9 +7,9 @@ import {
   RowData,
   createColumnHelper,
 } from '@tanstack/react-table'
-import { useEffect, useRef } from 'react'
 
 declare module '@tanstack/react-table' {
+  // eslint-disable-next-line
   interface TableMeta<TData extends RowData> {
     updateData: (rowIndex: number, columnId: string, value: unknown) => void
     edit: boolean
@@ -60,7 +60,7 @@ export function Table<T>(props: TableProps<T>) {
 
   const { columns, ...rest } = options
 
-  let cols = edit ? [].concat(Columns as any, columns as any) : columns
+  const cols = edit ? [].concat(Columns as any, columns as any) : columns
 
   // if (edit) {
 

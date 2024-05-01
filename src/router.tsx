@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
       {
         path: 'window',
         handle: {
-          crumb: (data: any) => <Link to="/settings/window">Windows</Link>,
+          crumb: () => <Link to="/settings/window">Windows</Link>,
         },
         children: [
           {
@@ -51,7 +51,7 @@ export const router = createBrowserRouter([
       {
         path: 'profile',
         handle: {
-          crumb: (data: any) => <Link to="/settings/profile">Profile</Link>,
+          crumb: () => <Link to="/settings/profile">Profile</Link>,
         },
         children: [
           {
@@ -62,7 +62,7 @@ export const router = createBrowserRouter([
             path: ':id',
             element: <ProfileView />,
             handle: {
-              crumb: (data: any, params: any) => {
+              crumb: (_data: any, params: any) => {
                 return <span>{settings.get('profile', params.id).name}</span>
               },
             },

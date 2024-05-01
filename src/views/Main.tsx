@@ -1,7 +1,5 @@
 import './main.css'
 
-import 'react-toastify/dist/ReactToastify.css'
-
 import { useSnapshot } from 'valtio'
 import StatusContainer from '@comp/StatusContainer'
 import { useEffect, useState } from 'react'
@@ -18,7 +16,6 @@ import { moveWindow } from 'tauri-plugin-positioner-api'
 import { useSearchParams } from 'react-router-dom'
 import { status } from '@/state/status'
 import { setWindowTheme } from '@/lib/utils'
-import Loader from '@comp/Loader'
 
 function MainView() {
   return (
@@ -31,7 +28,7 @@ function MainView() {
 function Wrapper() {
   const [loading, setLoading] = useState(true)
   const snap = useSnapshot(status.state)
-  let [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, _setSearchParams] = useSearchParams()
 
   const profileId = searchParams.get('profile')
 
@@ -59,21 +56,15 @@ function Wrapper() {
 
     let monitor: Monitor | undefined | null = null
 
-    console.log(window)
-
     if (window.monitor) {
       const monitors = await availableMonitors()
-      console.log('monitors', monitors)
-      console.log('monitorId', window.monitor)
+
       monitor = monitors.find((mon) => mon.name === window.monitor)
     } else {
       monitor = await primaryMonitor()
     }
 
-    console.log('monitor', monitor)
-
     if (monitor) {
-      console.log(monitor)
       await appWindow.setPosition(monitor.position)
     }
 

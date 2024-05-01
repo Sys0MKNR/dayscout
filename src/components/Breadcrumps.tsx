@@ -14,8 +14,8 @@ export function Breadcrumbs() {
 
   const params = useParams()
 
-  let matches = useMatches() as UIMatch<any, Handle>[]
-  let crumbs = matches
+  const matches = useMatches() as UIMatch<any, Handle>[]
+  const crumbs = matches
     // first get rid of any matches that don't have handle and crumb
     .filter((match) => Boolean(match.handle?.crumb))
     // now map them into an array of elements, passing the loader

@@ -32,10 +32,8 @@ export function WindowsView() {
           </tr>
         </thead>
         <tbody>
-          {window.map((row, i) => {
+          {window.map((row, _i) => {
             const p = (row.profile && profileMap[row.profile]?.name) || ''
-
-            console.log(p)
 
             return (
               <tr

@@ -1,7 +1,7 @@
 import { settings } from '@/state/settings'
 import { ISettingsSchemaBase } from '@/types/settings'
 import { useEffect } from 'react'
-import { SubmitErrorHandler, SubmitHandler } from 'react-hook-form'
+import { SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 export function useDuplicate(t: keyof ISettingsSchemaBase, id: string) {
@@ -39,7 +39,6 @@ export function useOnValid<
   }, [form.formState.isSubmitSuccessful])
 
   return async (values: U) => {
-    console.log('submit', values)
     settings.update(t, id, values)
     navigate('.', { replace: true })
   }

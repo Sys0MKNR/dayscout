@@ -8,8 +8,6 @@ export const store = new Store('.settings.json')
 export async function loadSettingsFromStore() {
   const data = await store.get('settings')
 
-  console.log('data', data)
-
   let s = null
 
   if (data) {
@@ -32,8 +30,6 @@ export async function loadSettingsFromStore() {
     await store.set('settings', s)
     await store.save()
   }
-
-  console.log('settings loaded', s)
 
   return s
 }

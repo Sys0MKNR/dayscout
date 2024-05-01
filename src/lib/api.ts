@@ -4,7 +4,6 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
 
 import { http } from '@tauri-apps/api'
-import { ISettingsSchema } from '@/types/settings'
 import { IProfileSchema } from '@/types/profile'
 const fetch = http.fetch
 
@@ -29,8 +28,6 @@ export interface IStatus {
 
 export const getStatus = async (args: IGetStatusArgs) => {
   const { url, thresholds, token } = args
-
-  console.log('status args', args)
 
   const statusURL = new URL(URL_STATUS, url)
   statusURL.searchParams.append('token', token)
@@ -85,8 +82,6 @@ export interface INSSProfile {
 
 export const getProfile = async (args: IGetProfileArgs) => {
   const { url, token } = args
-
-  console.log(URL_SETTINGS, url)
 
   const statusURL = new URL(URL_SETTINGS, url)
   statusURL.searchParams.append('token', token)

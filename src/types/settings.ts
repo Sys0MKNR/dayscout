@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { ProfileSchema } from './profile'
-import { uniqueNameInZodArray } from './utils'
 import { WindowSchema } from './window'
 
 export const SettingsSchemaBase = z.object({

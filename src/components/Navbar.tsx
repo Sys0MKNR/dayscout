@@ -6,7 +6,7 @@ export interface NavbarProps {
   fullscreen?: boolean
 }
 
-function Navbar(props: NavbarProps) {
+function Navbar() {
   return (
     <header
       data-tauri-drag-region

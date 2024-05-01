@@ -1,6 +1,4 @@
-import { ISettingsSchemaBase, SettingsSchemaBase } from '@/types/settings'
 import { proxy } from 'valtio'
-import { event } from '@tauri-apps/api'
 import { IProfileSchema } from '@/types/profile'
 import { IWindowSchema } from '@/types/window'
 import { loadSettingsFromStore } from './store'

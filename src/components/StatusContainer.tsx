@@ -16,7 +16,6 @@ export interface StatusContainerProps extends StatusProps {
 }
 
 function StatusContainer(props: StatusContainerProps) {
-  console.log('statuscontainer')
   const { toolbar = true, closeBtn = true } = props
 
   const queryClient = useQueryClient()
@@ -26,7 +25,6 @@ function StatusContainer(props: StatusContainerProps) {
 
   useEffect(() => {
     const unlisten = listen('status:forceRefresh', () => {
-      console.log('force refresh')
       queryClient.resetQueries()
     })
     return () => {
@@ -43,7 +41,6 @@ function StatusContainer(props: StatusContainerProps) {
       }
 
       return color
-    } else {
     }
 
     const transparency = Math.round(

@@ -17,7 +17,6 @@ export function WindowView() {
   const [monitors, setMonitors] = useState<Monitor[]>([])
 
   const load = async () => {
-    console.log('load')
     const monitors = await availableMonitors()
 
     if (!id) {

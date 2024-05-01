@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 
 import Loader from './Loader'
 
@@ -40,19 +40,19 @@ const directionMap: Record<string, typeof IconChevronsUp | null> = {
   'RATE OUT OF RANGE': IconX,
 }
 
-const textSizesDefault = {
-  delta: 'text-4xl',
-  direction: 'text-8xl',
-  lastUpdated: 'text-2xl',
-  main: 'text-8xl',
-}
+// const textSizesDefault = {
+//   delta: 'text-4xl',
+//   direction: 'text-8xl',
+//   lastUpdated: 'text-2xl',
+//   main: 'text-8xl',
+// }
 
-const textSizesFullScreen = {
-  delta: 'text-[12vmin]',
-  direction: 'text-[32vmin]',
-  lastUpdated: 'text-[10vmin]',
-  main: 'text-[32vmin]',
-}
+// const textSizesFullScreen = {
+//   delta: 'text-[12vmin]',
+//   direction: 'text-[32vmin]',
+//   lastUpdated: 'text-[10vmin]',
+//   main: 'text-[32vmin]',
+// }
 
 export interface StatusProps {
   appearance: IProfileSchema['appearance']
@@ -74,7 +74,6 @@ const DirectionIcon = (props: { direction: string; size: number }) => {
 }
 
 function Status(props: StatusProps) {
-  console.log('status')
   const { url, token, thresholds, fetchThresholds, fetchInterval } = props
 
   const retryTimer = useRef<number | null>(null)
@@ -82,7 +81,6 @@ function Status(props: StatusProps) {
   const settingsQuery = useQuery({
     queryKey: ['settings', { url, token, thresholds }],
     queryFn: async ({ queryKey }) => {
-      console.log('settings fetch')
       return fetchThresholds
         ? await getProfile(queryKey[1] as IGetProfileArgs)
         : { thresholds: thresholds }
@@ -115,7 +113,6 @@ function Status(props: StatusProps) {
       if (query.state.status === 'error') {
         if (retryTimer.current === null) {
           retryTimer.current = window.setTimeout(() => {
-            console.log('refetching')
             statusQuery.refetch()
             retryTimer.current = null
           }, 60000)

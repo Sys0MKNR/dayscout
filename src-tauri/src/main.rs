@@ -17,7 +17,7 @@ mod tray;
 mod utils;
 mod window;
 
-use cmd::{show_or_create_window_cmd, toggle_window_cmd, update_settings_cmd};
+use cmd::{show_or_create_window_cmd, toggle_window_cmd, update_windows_cmd};
 use tray::{create_tray, handle_tray};
 
 use utils::Error;
@@ -121,7 +121,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             show_or_create_window_cmd,
             toggle_window_cmd,
-            update_settings_cmd,
+            update_windows_cmd,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");

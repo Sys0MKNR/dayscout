@@ -32,7 +32,7 @@ pub fn handle_tray(handle: &AppHandle, event: SystemTrayEvent) {
         } => update_windows(handle.clone()),
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
             "settings" => {
-                show_or_create_window("settings", handle, None)
+                show_or_create_window("settings", handle)
                     .expect("settings window can't be created");
             }
             "refresh" => update_windows(handle.clone()),

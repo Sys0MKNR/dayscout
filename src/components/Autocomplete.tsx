@@ -1,8 +1,6 @@
-//./components/Autocomplete.tsx
-
-import { IconEdit, IconTrash, IconTrashFilled } from '@tabler/icons-react'
+import { IconEdit, IconTrashFilled } from '@tabler/icons-react'
 import classNames from 'classnames'
-import { KeyboardEvent, useCallback, useLayoutEffect, useMemo } from 'react'
+import { KeyboardEvent, useCallback, useMemo } from 'react'
 import { useRef, useState } from 'react'
 
 type Props = {
@@ -24,7 +22,7 @@ export default function Autocomplete(props: Props) {
     className,
   } = props
   const ref = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
+  const [_open, setOpen] = useState(false)
 
   const [value, setValue] = useState('')
 

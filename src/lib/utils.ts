@@ -11,7 +11,7 @@ export function getFromObj<T>(
 export function convertHSLStringToHex(hsl: string): string {
   const tokens = hsl.split(' ')
 
-  let h = parseFloat(tokens[0])
+  const h = parseFloat(tokens[0])
 
   const s = parseFloat(tokens[1].substring(0, tokens[1].length - 1))
   const l = parseFloat(tokens[2].substring(0, tokens[2].length - 1))
@@ -23,12 +23,12 @@ export function convertHSLToHex(h: number, s: number, l: number): string {
   s /= 100
   l /= 100
 
-  let c = (1 - Math.abs(2 * l - 1)) * s,
-    x = c * (1 - Math.abs(((h / 60) % 2) - 1)),
-    m = l - c / 2,
-    r = 0,
-    g = 0,
-    b = 0
+  const c = (1 - Math.abs(2 * l - 1)) * s
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
+  const m = l - c / 2
+  let r = 0
+  let g = 0
+  let b = 0
 
   if (0 <= h && h < 60) {
     r = c
@@ -72,15 +72,11 @@ export function getHexColorFromCSSVar(color: string) {
     document.documentElement
   ).getPropertyValue(color)
 
-  console.log(colorValue)
-
-  setTimeout(() => {
-    const colorValue = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue(color)
-
-    console.log(colorValue)
-  }, 2000)
+  // setTimeout(() => {
+  //   const colorValue = getComputedStyle(
+  //     document.documentElement
+  //   ).getPropertyValue(color)
+  // }, 2000)
 
   return convertHSLStringToHex(colorValue.trim())
 }

@@ -7,7 +7,6 @@ import { FormField } from '@comp/Form/FormField'
 import { FormGroup } from '@comp/FormGroup'
 import { SettingsOpts } from '@comp/Settings/SettingsOpts'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { availableMonitors } from '@tauri-apps/api/window'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
@@ -18,9 +17,6 @@ export function ProfileView() {
   const [profile, setProfile] = useState<IProfileSchema | null | false>(null)
 
   const load = async () => {
-    console.log('load')
-    const monitors = await availableMonitors()
-
     if (!id) {
       return
     }

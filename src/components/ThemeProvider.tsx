@@ -4,12 +4,11 @@ import { Outlet, useSearchParams } from 'react-router-dom'
 import { useSnapshot } from 'valtio'
 
 export function ThemeProvider() {
-  let [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, _setSearchParams] = useSearchParams()
 
   const profile = useSnapshot(settings.state.data.profile)
 
   useEffect(() => {
-    console.log('theme update')
     const html = document.querySelector('html')
 
     const profileId = searchParams.get('profile')
@@ -20,8 +19,6 @@ export function ThemeProvider() {
     } else {
       p = profile[0]
     }
-
-    console.log('profile', p)
 
     if (!p) {
       return

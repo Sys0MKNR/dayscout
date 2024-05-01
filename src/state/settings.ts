@@ -28,7 +28,6 @@ async function init() {
   const unsubStoreUpdates = subscribe(state, async () => {
     store.set('settings', state.data)
     await store.save()
-    console.log('settings saved', state.data)
     event.emit('settings-updated', state.data)
   })
 
@@ -73,10 +72,10 @@ function get<
   return obj as U
 }
 
-function getIndex<
-  T extends keyof ISettingsSchemaBase,
-  U extends ISettingsSchemaBase[T],
->(t: T, id: string): number {
+function getIndex<T extends keyof ISettingsSchemaBase>(
+  t: T,
+  id: string
+): number {
   const index = state.data[t].findIndex((o) => o.id === id)
 
   if (index === -1) {
@@ -107,8 +106,6 @@ function duplicate<
     name: `${obj.name} (copy)`,
   }) as U
 
-  console.log('duplicate', newObj)
-
   state.data[t].push(newObj as any)
 
   return newObj
@@ -121,8 +118,6 @@ function update<
   const index = getIndex(t, id)
 
   state.data[t][index] = Object.assign(state.data[t][index], data)
-
-  console.log('new state:', state)
 
   return state.data[t][index]
 }

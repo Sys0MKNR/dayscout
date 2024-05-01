@@ -6,8 +6,6 @@ import { useSnapshot } from 'valtio'
 export function ProfilesView() {
   const profiles = useSnapshot(settings.state.data.profile)
 
-  console.log('profiles', profiles)
-
   const navigate = useNavigate()
 
   const create = async () => {
@@ -32,7 +30,7 @@ export function ProfilesView() {
           </tr>
         </thead>
         <tbody>
-          {profiles.map((row, _) => (
+          {profiles.map((row, _i) => (
             <tr
               key={row.id}
               className="hover cursor-pointer"
