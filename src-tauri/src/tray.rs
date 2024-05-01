@@ -2,8 +2,6 @@ use tauri::{AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, Sys
 
 use crate::{update_windows, window::show_or_create_window};
 
-// use crate::window::show_or_create_window;
-
 pub fn create_tray() -> SystemTray {
     let settings_item = CustomMenuItem::new("settings".to_string(), "Settings");
     let refresh = CustomMenuItem::new("refresh".to_string(), "Refresh");

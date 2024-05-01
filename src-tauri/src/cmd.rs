@@ -3,7 +3,6 @@ use crate::{
     utils::Error,
     window::{show_or_create_window, toggle_window},
 };
-// use crate::window::{show_or_create_window, toggle_window};
 
 #[tauri::command]
 pub async fn show_or_create_window_cmd(

@@ -32,7 +32,7 @@ const Columns = [
           type="checkbox"
           className="checkbox"
           checked={table.getIsAllRowsSelected()}
-          onChange={table.getToggleAllRowsSelectedHandler()} //or getToggleAllPageRowsSelectedHandler
+          onChange={table.getToggleAllRowsSelectedHandler()}
         />
       )
     },
@@ -61,10 +61,6 @@ export function Table<T>(props: TableProps<T>) {
   const { columns, ...rest } = options
 
   const cols = edit ? [].concat(Columns as any, columns as any) : columns
-
-  // if (edit) {
-
-  // }
 
   const table = useReactTable({
     columns: cols,

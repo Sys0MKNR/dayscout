@@ -2,7 +2,7 @@ import { IProfileSchema } from '@/types/profile'
 import { Positions, Themes } from '@/types/utils'
 import { FormFieldOptionGroup } from '@comp/Form/FormField'
 
-export const SettingsOpts: FormFieldOptionGroup<IProfileSchema>[] = [
+export const ProfileFormOpts: FormFieldOptionGroup<IProfileSchema>[] = [
   {
     name: 'General',
     children: [

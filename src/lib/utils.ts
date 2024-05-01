@@ -72,12 +72,6 @@ export function getHexColorFromCSSVar(color: string) {
     document.documentElement
   ).getPropertyValue(color)
 
-  // setTimeout(() => {
-  //   const colorValue = getComputedStyle(
-  //     document.documentElement
-  //   ).getPropertyValue(color)
-  // }, 2000)
-
   return convertHSLStringToHex(colorValue.trim())
 }
 

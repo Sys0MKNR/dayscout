@@ -29,7 +29,6 @@ const SettingsProvider = (props: { children: ReactNode }) => {
 
   if (!snap.ready) {
     return null
-    // return <Loader />
   }
 
   return props.children

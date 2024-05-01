@@ -5,7 +5,7 @@ import { IProfileSchema, ProfileSchema } from '@/types/profile'
 import { FormActions } from '@comp/Form/FormActions'
 import { FormField } from '@comp/Form/FormField'
 import { FormGroup } from '@comp/FormGroup'
-import { SettingsOpts } from '@comp/Settings/SettingsOpts'
+import { ProfileFormOpts } from '@comp/Settings/ProfileFormOpts'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
@@ -60,7 +60,7 @@ export function Profile(props: ProfileProps) {
   const onValid = useOnValid('profile', profile.id, form)
 
   const options = useMemo(() => {
-    const opts = SettingsOpts
+    const opts = ProfileFormOpts
 
     for (const group of opts) {
       for (const option of group.children) {

@@ -21,7 +21,7 @@ use cmd::{show_or_create_window_cmd, toggle_window_cmd, update_windows_cmd};
 use tray::{create_tray, handle_tray};
 
 use utils::Error;
-use window::create_main_window;
+use window::{create_main_window, create_settings_window};
 #[derive(Serialize, Deserialize, Clone)]
 struct SettingsWindow {
     id: String,
@@ -92,6 +92,7 @@ fn update_windows(handle: AppHandle) {
     });
 
     windows.iter().for_each(|w| {
+        println!("closing window: {}", w.0);
         w.1.close().unwrap();
     });
 }
@@ -107,14 +108,16 @@ fn main() {
         .setup(|app| {
             let handle = app.handle();
 
-            // let w = create_settings_window(&handle).unwrap();
-            // w.show().unwrap();
-
             app.listen_global("settings-updated", move |_| {
                 update_windows(handle.clone());
             });
 
             update_windows(app.handle());
+
+            if app.windows().len() == 0 {
+                let w = create_settings_window(&app.handle()).unwrap();
+                w.show().unwrap();
+            }
 
             Ok(())
         })

@@ -40,20 +40,6 @@ const directionMap: Record<string, typeof IconChevronsUp | null> = {
   'RATE OUT OF RANGE': IconX,
 }
 
-// const textSizesDefault = {
-//   delta: 'text-4xl',
-//   direction: 'text-8xl',
-//   lastUpdated: 'text-2xl',
-//   main: 'text-8xl',
-// }
-
-// const textSizesFullScreen = {
-//   delta: 'text-[12vmin]',
-//   direction: 'text-[32vmin]',
-//   lastUpdated: 'text-[10vmin]',
-//   main: 'text-[32vmin]',
-// }
-
 export interface StatusProps {
   appearance: IProfileSchema['appearance']
   url: string
