@@ -44,8 +44,6 @@ export const ProfileSchema = z.object({
       targetTop: z.coerce.number().default(180),
     })
     .default({}),
-
-  quitOnClose: z.coerce.boolean().default(false),
 })
 
 export type IProfileSchema = z.infer<typeof ProfileSchema>

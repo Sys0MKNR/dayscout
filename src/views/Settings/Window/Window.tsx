@@ -1,4 +1,4 @@
-import { useDuplicate, useOnValid, useRemove } from '@/hooks/useActions'
+import { useDuplicate, useUpdate, useRemove } from '@/hooks/useActions'
 import { settings } from '@/state/settings'
 import { IWindowSchema, WindowSchema } from '@/types/window'
 import { FormActions } from '@comp/Form/FormActions'
@@ -51,7 +51,7 @@ interface WindowProps {
   monitors: Monitor[]
 }
 
-export function Window(props: WindowProps) {
+function Window(props: WindowProps) {
   const { window, monitors } = props
 
   const profiles = useSnapshot(settings.state.data.profile)
@@ -63,7 +63,7 @@ export function Window(props: WindowProps) {
 
   const duplicate = useDuplicate('window', window.id)
   const remove = useRemove('window', window.id)
-  const onValid = useOnValid('window', window.id, form)
+  const onValid = useUpdate('window', window.id, form)
 
   return (
     <FormProvider {...form}>

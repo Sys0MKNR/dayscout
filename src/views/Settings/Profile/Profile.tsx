@@ -1,4 +1,4 @@
-import { useDuplicate, useOnValid, useRemove } from '@/hooks/useActions'
+import { useDuplicate, useUpdate, useRemove } from '@/hooks/useActions'
 import { getFromObj } from '@/lib/utils'
 import { settings } from '@/state/settings'
 import { IProfileSchema, ProfileSchema } from '@/types/profile'
@@ -47,7 +47,7 @@ interface ProfileProps {
   profile: IProfileSchema
 }
 
-export function Profile(props: ProfileProps) {
+function Profile(props: ProfileProps) {
   const profile = props.profile
 
   const form = useForm<IProfileSchema>({
@@ -57,7 +57,7 @@ export function Profile(props: ProfileProps) {
 
   const duplicate = useDuplicate('profile', profile.id)
   const remove = useRemove('profile', profile.id)
-  const onValid = useOnValid('profile', profile.id, form)
+  const onValid = useUpdate('profile', profile.id, form)
 
   const options = useMemo(() => {
     const opts = ProfileFormOpts

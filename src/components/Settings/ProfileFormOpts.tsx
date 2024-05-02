@@ -34,13 +34,6 @@ export const ProfileFormOpts: FormFieldOptionGroup<IProfileSchema>[] = [
         type: 'number',
         width: 'w-fit',
       },
-      {
-        name: 'quitOnClose',
-        label: 'Quit on Close',
-        placeholder: '',
-        type: 'checkbox',
-        width: 'w-fit',
-      },
     ],
   },
   {

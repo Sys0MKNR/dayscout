@@ -1,12 +1,13 @@
 import { createBrowserRouter, Link } from 'react-router-dom'
 import MainView from './views/Main'
-import { ProfilesView } from '@/views/Settings/Profiles'
-import { WindowsView } from '@/views/Settings/Windows'
+import { ProfilesView } from '@/views/Settings/Profile/Profiles'
+import { WindowsView } from '@/views/Settings/Window/Windows'
 import { SettingsIndexView } from '@/views/Settings/Index'
-import SettingsView from './SettingsView'
-import { ProfileView } from './views/Settings/Profile'
-import { WindowView } from './views/Settings/Window'
+import { ProfileView } from './views/Settings/Profile/Profile'
+import { WindowView } from './views/Settings/Window/Window'
 import { settings } from './state/settings'
+import { SettingsView } from './views/Settings/Settings'
+import { GeneralSettingsView } from './views/Settings/General'
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,13 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <SettingsIndexView />,
+      },
+      {
+        path: 'general',
+        handle: {
+          crumb: () => <Link to="/settings/general">General</Link>,
+        },
+        element: <GeneralSettingsView />,
       },
       {
         path: 'window',

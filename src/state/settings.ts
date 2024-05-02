@@ -1,5 +1,6 @@
 import { IProfileSchema } from '@/types/profile'
 import {
+  IGeneralSchema,
   ISettingsSchema,
   ISettingsSchemaBase,
   SettingsSchemaBase,
@@ -18,7 +19,7 @@ interface SettingsState {
 
 const state = proxy<SettingsState>({
   ready: false,
-  data: { profile: [], window: [] },
+  data: { profile: [], window: [], general: {} as any },
   unsubscribe: () => {},
 })
 

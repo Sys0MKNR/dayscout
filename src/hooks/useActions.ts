@@ -1,7 +1,7 @@
 import { settings } from '@/state/settings'
 import { ISettingsSchemaBase } from '@/types/settings'
 import { useEffect } from 'react'
-import { SubmitHandler } from 'react-hook-form'
+import { FieldValues, SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 export function useDuplicate(t: keyof ISettingsSchemaBase, id: string) {
@@ -26,7 +26,7 @@ export function useRemove(t: keyof ISettingsSchemaBase, id: string) {
   }
 }
 
-export function useOnValid<
+export function useUpdate<
   T extends keyof ISettingsSchemaBase,
   U extends Partial<ISettingsSchemaBase[T]>,
 >(t: T, id: string, form: any): SubmitHandler<U> {
@@ -55,5 +55,23 @@ export function useCreateNew<T extends keyof ISettingsSchemaBase>(t: T) {
 
     const obj = settings.create(t, { name: 'new ' + t, ...defaults[t] } as any)
     navigate(`/settings/${t}/${obj.id}`)
+  }
+}
+
+export function useOnValid<U extends FieldValues>(
+  form: any,
+  fn: SubmitHandler<U>
+): SubmitHandler<U> {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (form.formState.isSubmitSuccessful) {
+      form.reset(form.getValues())
+    }
+  }, [form.formState.isSubmitSuccessful])
+
+  return async (values, event) => {
+    await fn(values, event)
+    navigate('.', { replace: true })
   }
 }

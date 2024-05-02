@@ -6,8 +6,8 @@ import {
 } from '@tabler/icons-react'
 
 export interface FormActionsProps {
-  duplicate: () => void
-  remove: () => void
+  duplicate?: () => void
+  remove?: () => void
   form: any
 }
 

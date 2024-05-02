@@ -59,7 +59,14 @@ fn load_setings(handle: AppHandle) -> Result<Settings, Error> {
 }
 
 fn update_windows(handle: AppHandle) {
-    let settings = load_setings(handle.clone()).unwrap();
+    let res = load_setings(handle.clone());
+
+    if res.is_err() {
+        println!("error loading settings: {:?}", res.err().unwrap());
+        return;
+    }
+
+    let settings = res.unwrap();
 
     let mut windows: HashMap<String, Window> = handle.windows();
     windows.remove("settings");
