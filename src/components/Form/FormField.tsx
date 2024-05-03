@@ -20,7 +20,7 @@ const DefaultInputElement = (
     <input
       {...props}
       {...register(props.name as any)}
-      className="input input-bordered input-sm w-full"
+      className="join-item input input-bordered input-sm w-full"
     />
   )
 }
@@ -40,7 +40,7 @@ const CheckBoxInputElement = (
       {...props}
       {...register(props.name as any)}
       checked={Boolean(watchCheck)}
-      className="toggle"
+      className="toggle join-item toggle-lg"
       type="checkbox"
     />
   )
@@ -65,7 +65,7 @@ const PasswordInputElement = (
         className="input input-bordered w-full input-sm join-item"
       />
       <button
-        className="btn btn-square swap btn-sm join-item rounded-r-full"
+        className="btn btn-outline btn-square swap btn-sm join-item rounded-r-full"
         type="button"
         onClick={() => setShowPassword((p) => !p)}
       >
@@ -87,7 +87,7 @@ const ColorInputElement = (
     <input
       {...props}
       {...register(props.name as any)}
-      className="btn btn-sm"
+      className="btn btn-sm join-item"
       type="color"
     />
   )
@@ -182,22 +182,19 @@ export function FormField<T extends object>(props: FormFieldProps<T>) {
     children,
     customProps,
     stacked = true,
-    className,
+    className = '',
   } = item
 
   const Input = getInputElement(type)
 
-  const orientation = stacked ? 'flex-col' : 'items-center'
-
   const margin = stacked ? '' : 'mr-2'
 
   return (
-    <div
-      className={`${
-        item.width || 'w-full'
-      } px-4 flex ${orientation} ${className || ''}`}
-    >
-      <label htmlFor={name} className={`label ${margin}`}>
+    <div className={`join px-4 ${item.width || 'w-full'}  ${className}`}>
+      <label
+        htmlFor={name}
+        className={`join-item input input-sm input-bordered label ${margin}`}
+      >
         <span className="label-text text-base min-h-6">{label || name}</span>
       </label>
 

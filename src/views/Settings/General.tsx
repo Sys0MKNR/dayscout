@@ -4,6 +4,7 @@ import { GeneralSchema, IGeneralSchema } from '@/types/settings'
 import { Themes } from '@/types/utils'
 import { FormActions } from '@comp/Form/FormActions'
 import { FormField } from '@comp/Form/FormField'
+import { SelectInput, TextInput } from '@comp/Form/Input'
 import { FormGroup } from '@comp/FormGroup'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, FormProvider } from 'react-hook-form'
@@ -31,21 +32,15 @@ export function GeneralSettingsView() {
 
         <div className="flex gap-4 flex-col overflow-y-auto h-[calc(100vh-208px)] pr-4">
           <FormGroup name="General" className="flex-col">
-            <div className="join">
-              <label className="input input-bordered join-item input-sm w-24">
-                Theme
-              </label>
-              <select
-                className="select select-bordered w-full join-item select-sm"
-                {...form.register('theme')}
-              >
-                {Themes.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <TextInput></TextInput>
+
+            <SelectInput name="theme">
+              {Themes.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </SelectInput>
           </FormGroup>
         </div>
       </form>
