@@ -1,9 +1,8 @@
 import { IProfileSchema } from '@/types/profile'
 import {
-  IGeneralSchema,
   ISettingsSchema,
-  ISettingsSchemaBase,
-  SettingsSchemaBase,
+  IListSettingsSchema,
+  ListSettingsSchema,
 } from '@/types/settings'
 import { IWindowSchema } from '@/types/window'
 import { event } from '@tauri-apps/api'
@@ -61,8 +60,8 @@ const $ = derive({
 })
 
 function get<
-  T extends keyof ISettingsSchemaBase,
-  U extends ISettingsSchemaBase[T],
+  T extends keyof IListSettingsSchema,
+  U extends IListSettingsSchema[T],
 >(t: T, id: string): U {
   const obj = state.data[t].find((o) => o.id === id)
 
@@ -73,7 +72,7 @@ function get<
   return obj as U
 }
 
-function getIndex<T extends keyof ISettingsSchemaBase>(
+function getIndex<T extends keyof IListSettingsSchema>(
   t: T,
   id: string
 ): number {
@@ -87,21 +86,21 @@ function getIndex<T extends keyof ISettingsSchemaBase>(
 }
 
 function create<
-  T extends keyof ISettingsSchemaBase,
-  U extends ISettingsSchemaBase[T],
+  T extends keyof IListSettingsSchema,
+  U extends IListSettingsSchema[T],
 >(t: T, data?: Partial<U>): U {
-  const obj = SettingsSchemaBase.shape[t].parse(data || {}) as U
+  const obj = ListSettingsSchema.shape[t].parse(data || {}) as U
   state.data[t].push(obj as any)
   return obj
 }
 
 function duplicate<
-  T extends keyof ISettingsSchemaBase,
-  U extends ISettingsSchemaBase[T],
+  T extends keyof IListSettingsSchema,
+  U extends IListSettingsSchema[T],
 >(t: T, id: string): U {
   const obj = get(t, id)
 
-  const newObj = SettingsSchemaBase.shape[t].parse({
+  const newObj = ListSettingsSchema.shape[t].parse({
     ...obj,
     id: undefined,
     name: `${obj.name} (copy)`,
@@ -113,8 +112,8 @@ function duplicate<
 }
 
 function update<
-  T extends keyof ISettingsSchemaBase,
-  U extends ISettingsSchemaBase[T],
+  T extends keyof IListSettingsSchema,
+  U extends IListSettingsSchema[T],
 >(t: T, id: string, data: Partial<U>) {
   const index = getIndex(t, id)
 
@@ -123,7 +122,7 @@ function update<
   return state.data[t][index]
 }
 
-function remove<T extends keyof ISettingsSchemaBase>(t: T, id: string) {
+function remove<T extends keyof IListSettingsSchema>(t: T, id: string) {
   const index = getIndex(t, id)
 
   state.data[t].splice(index, 1)

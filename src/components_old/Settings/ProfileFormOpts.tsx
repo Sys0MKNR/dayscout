@@ -1,6 +1,6 @@
 import { IProfileSchema } from '@/types/profile'
 import { Positions, Themes } from '@/types/utils'
-import { FormFieldOptionGroup } from '@comp/Form/FormField'
+import { FormFieldOptionGroup } from '@/components_old/Form/FormField'
 
 export const ProfileFormOpts: FormFieldOptionGroup<IProfileSchema>[] = [
   {

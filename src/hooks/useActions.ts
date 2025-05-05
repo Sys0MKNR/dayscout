@@ -1,10 +1,10 @@
 import { settings } from '@/state/settings'
-import { ISettingsSchemaBase } from '@/types/settings'
+import { IListSettingsSchema } from '@/types/settings'
 import { useEffect } from 'react'
 import { FieldValues, SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
-export function useDuplicate(t: keyof ISettingsSchemaBase, id: string) {
+export function useDuplicate(t: keyof IListSettingsSchema, id: string) {
   const navigate = useNavigate()
 
   return () => {
@@ -17,7 +17,7 @@ export function useDuplicate(t: keyof ISettingsSchemaBase, id: string) {
   }
 }
 
-export function useRemove(t: keyof ISettingsSchemaBase, id: string) {
+export function useRemove(t: keyof IListSettingsSchema, id: string) {
   const navigate = useNavigate()
 
   return () => {
@@ -27,8 +27,8 @@ export function useRemove(t: keyof ISettingsSchemaBase, id: string) {
 }
 
 export function useUpdate<
-  T extends keyof ISettingsSchemaBase,
-  U extends Partial<ISettingsSchemaBase[T]>,
+  T extends keyof IListSettingsSchema,
+  U extends Partial<IListSettingsSchema[T]>,
 >(t: T, id: string, form: any): SubmitHandler<U> {
   const navigate = useNavigate()
 
@@ -44,7 +44,7 @@ export function useUpdate<
   }
 }
 
-export function useCreateNew<T extends keyof ISettingsSchemaBase>(t: T) {
+export function useCreateNew<T extends keyof IListSettingsSchema>(t: T) {
   const navigate = useNavigate()
 
   return () => {

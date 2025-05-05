@@ -2,27 +2,24 @@ use tauri::{window, AppHandle, Manager};
 
 use crate::utils::Error;
 
-pub fn create_settings_window(app_handle: &AppHandle) -> Result<window::Window, Error> {
-    let window = tauri::WindowBuilder::new(
-        app_handle,
-        "settings",
-        tauri::WindowUrl::App("/settings".into()),
-    )
-    .fullscreen(false)
-    .inner_size(800.0, 600.0)
-    .transparent(false)
-    .visible(false)
-    .resizable(true)
-    .decorations(true)
-    .title("dayscout settings")
-    .build()?;
+pub fn create_main_window(app_handle: &AppHandle) -> Result<window::Window, Error> {
+    let window =
+        tauri::WindowBuilder::new(app_handle, "settings", tauri::WindowUrl::App("/".into()))
+            .fullscreen(false)
+            .inner_size(800.0, 600.0)
+            .transparent(false)
+            .visible(false)
+            .resizable(true)
+            .decorations(true)
+            .title("dayscout settings")
+            .build()?;
 
     Ok(window)
 }
 
-pub fn create_main_window(label: &str, app_handle: &AppHandle) -> Result<window::Window, Error> {
+pub fn create_status_window(label: &str, app_handle: &AppHandle) -> Result<window::Window, Error> {
     let window =
-        tauri::WindowBuilder::new(app_handle, label, tauri::WindowUrl::App("/main".into()))
+        tauri::WindowBuilder::new(app_handle, label, tauri::WindowUrl::App("/status".into()))
             .fullscreen(false)
             .inner_size(200.0, 200.0)
             .resizable(false)
@@ -47,8 +44,8 @@ pub fn get_or_create_window(label: &str, app_handle: &AppHandle) -> Result<windo
     match app_handle.get_window(label) {
         Some(w) => Ok(w),
         None => match label {
-            "settings" => create_settings_window(app_handle),
-            l => create_main_window(l, app_handle),
+            "settings" => create_main_window(app_handle),
+            l => create_status_window(l, app_handle),
         },
     }
 }

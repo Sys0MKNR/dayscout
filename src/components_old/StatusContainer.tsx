@@ -1,5 +1,5 @@
 import { range } from '@/lib/utils'
-import Status, { StatusProps } from '@comp/Status'
+import Status, { StatusProps } from '@/components_old/Status'
 import { appWindow } from '@tauri-apps/api/window'
 import { useEffect, useMemo } from 'react'
 

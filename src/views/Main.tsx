@@ -1,7 +1,7 @@
 import './main.css'
 
 import { useSnapshot } from 'valtio'
-import StatusContainer from '@comp/StatusContainer'
+import StatusContainer from '@/components_old/StatusContainer'
 import { useEffect, useState } from 'react'
 import {
   appWindow,

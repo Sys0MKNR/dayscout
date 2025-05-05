@@ -1,4 +1,5 @@
 import hslToHex from 'hsl-to-hex'
+import { AnyZodObject, z, ZodIssue, ZodType } from 'zod'
 
 export function getFromObj<T>(
   obj: Record<string, unknown>,
@@ -68,9 +69,9 @@ export function convertHSLToHex(h: number, s: number, l: number): string {
 
 export function getHexColorFromCSSVar(color: string) {
   // BUG: computedvalue is corrupted when requested too early
-  const colorValue = getComputedStyle(
-    document.documentElement
-  ).getPropertyValue(color)
+  const colorValue = getComputedStyle(document.documententry).getPropertyValue(
+    color
+  )
 
   return convertHSLStringToHex(colorValue.trim())
 }
@@ -111,4 +112,45 @@ export type Subset<K> = {
 export function setWindowTheme(theme: string) {
   const html = document.querySelector('html')
   html?.setAttribute('data-theme', theme)
+}
+
+export type ValidationError<T extends ZodType> = z.inferFlattenedErrors<
+  T,
+  string
+>
+
+export function validate<T extends ZodType, U extends z.infer<T>>(
+  schema: T,
+  data: U
+) {
+  const result: z.SafeParseReturnType<U, U> = schema.safeParse(data)
+
+  const error: ValidationError<T> | null =
+    result.error?.flatten((issue: ZodIssue) => issue.message) || null
+
+  return {
+    success: result.success,
+    data: result.data,
+    error,
+  }
+}
+
+export function findAndRemove<T extends Record<string, unknown>>(
+  arr: T[],
+  key: string,
+  value: any
+) {
+  const newArr: T[] = []
+
+  let entry: T | null = null
+
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i][key] !== value) {
+      newArr.push(arr[i])
+    } else {
+      entry = arr[i]
+    }
+  }
+
+  return [entry, newArr]
 }

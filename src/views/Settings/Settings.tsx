@@ -1,7 +1,7 @@
-import Navbar from '@comp/Navbar'
+import Navbar from '@/components_old/Navbar'
 
 import { Outlet } from 'react-router-dom'
-import { Breadcrumbs } from '@comp/Breadcrumps'
+import { Breadcrumbs } from '@/components_old/Breadcrumps'
 import { settings } from '@/state/settings'
 import { setWindowTheme } from '@/lib/utils'
 import { ReactNode, useEffect } from 'react'
