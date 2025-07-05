@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dayscout Status</title>
+</head>
+
+<body>
+  <div id="root" data-tauri-drag-region>
+    <div id="status-box">
+      <div id="value">
+        <span id="value-text" class="textFitted"></span>
+        <svg id="value-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+        </svg>
+
+      </div>
+      <div id="delta">
+        <span id="delta-text" class="textFitted"></span>
+
+      </div>
+      <div id="last-updated">
+        <span id="last-updated-text" class="textFitted"></span>
+      </div>
+    </div>
+
+    <div id="loader" class="hidden">
+      <div class="loader">
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/status.ts"></script>
+</body>
+
+</html>

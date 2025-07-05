@@ -1,15 +1,25 @@
-#[derive(Debug, thiserror::Error)]
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
-    // #[error("unknown window label")]
-    // InvalidWindowLabel,
-    // #[error("no payload")]
-    // NoPayload,
-    // #[error("failed to load settings")]
-    // SettingsLoadFailed,
+    #[error("invalid settings file")]
+    InvalidSettingsFile,
+    #[error("task manager not found")]
+    TaskManagerNotFound,
+    #[error("failed to reload overlays: {err:?} ")]
+    OverlaysLoadFailed { err: String },
+    #[error("{msg:?}")]
+    CustomError { msg: String },
     #[error(transparent)]
     Tauri(#[from] tauri::Error),
     #[error(transparent)]
     TauriPluginStore(#[from] tauri_plugin_store::Error),
+    #[error(transparent)]
+    Serde(#[from] serde_json::Error),
+    #[error(transparent)]
+    ParseError(#[from] url::ParseError),
+    #[error(transparent)]
+    Reqwest(#[from] reqwest::Error),
+    #[error(transparent)]
+    SystemTimeError(#[from] std::time::SystemTimeError),
 }
 
 impl serde::Serialize for Error {

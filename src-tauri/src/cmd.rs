@@ -1,25 +1,27 @@
-use crate::{
-    update_windows,
-    utils::Error,
-    window::{show_or_create_window, toggle_window},
-};
+use crate::{load_overlays as load_overlays_handler , utils};
+use font_kit::{error::SelectionError, source::SystemSource};
 
-#[tauri::command]
-pub async fn show_or_create_window_cmd(
-    handle: tauri::AppHandle,
-    label: String,
-) -> Result<(), Error> {
-    show_or_create_window(label.as_str(), &handle)?;
-    Ok(())
-}
+  
+  #[tauri::command]
+  pub async fn load_overlays(app_handle: tauri::AppHandle) -> Result<(), String> {
+      load_overlays_handler(&app_handle)
+          .await
+          .map_err(|e| utils::Error::OverlaysLoadFailed { err: e.to_string() }.to_string())?;
 
-#[tauri::command]
-pub async fn toggle_window_cmd(handle: tauri::AppHandle, label: String) -> Result<(), Error> {
-    toggle_window(label.as_str(), &handle)?;
-    Ok(())
-}
+      Ok(())
+  }
 
-#[tauri::command]
-pub async fn update_windows_cmd(handle: tauri::AppHandle) {
-    update_windows(handle);
-}
+
+  #[tauri::command]
+  pub async fn font_families() -> Vec<std::string::String> {
+      let source = SystemSource::new();
+      let fonts: Result<Vec<String>, SelectionError> = source.all_families();
+      if let Ok(font) = fonts {
+          font
+      } else {
+          vec![]
+      }
+  }
+
+
+

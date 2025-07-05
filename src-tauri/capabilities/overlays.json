@@ -1,0 +1,14 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "overlays-perms",
+  "description": "Capability for the overlay window",
+  "windows": ["*"],
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "store:allow-load",
+    "store:allow-get",
+    "core:window:allow-start-dragging",
+    "log:default"
+  ]
+}

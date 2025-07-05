@@ -1,105 +1,91 @@
+import { deepMerge } from '@mantine/core'
+import { invoke } from '@tauri-apps/api/core'
+import { disable, enable } from '@tauri-apps/plugin-autostart'
+import { LazyStore } from '@tauri-apps/plugin-store'
 import {
-  IListSettingsSchema,
-  IListSettingsSchemaKey,
-  ISettingsSchema,
-  ISettingsSchemaKey,
-  isListSetting,
-  ListSettingsSchema,
+  GeneralSchema,
+  type IGeneralSchema,
+  type IOverlaySchema,
+  OverlaySchema,
   SettingsSchema,
-} from '@/types/settings'
-import { Store } from 'tauri-plugin-store-api'
-import { deepmerge } from 'deepmerge-ts'
-import { findAndRemove } from './utils'
+} from './types'
 
-export const store = new Store('.settings.json')
+const store = new LazyStore('.settings.json', { autoSave: true })
 
-async function get<T extends ISettingsSchemaKey>(
-  key: T,
-  opts: {
-    unsafe?: boolean
-  } = {}
-) {
-  const { unsafe = false } = opts
+async function getOverlay(id: string): Promise<IOverlaySchema | undefined> {
+  const data = (await store.get<IOverlaySchema[]>('overlays')) || []
+  return data.find((overlay) => overlay.id === id)
+}
 
-  const data = (await store.get<string>(key)) || undefined
+async function setOverlay(overlay: Partial<IOverlaySchema>): Promise<void> {
+  const overlays = (await store.get<IOverlaySchema[]>('overlays')) || []
+  const index = overlays.findIndex((o) => o.id === overlay.id)
 
-  if (unsafe) {
-    return data as any
+  let newItem = overlay as IOverlaySchema
+
+  if (index !== -1) {
+    newItem = deepMerge(overlays[index], overlay)
   }
 
-  return SettingsSchema.shape[key].parse(data) as ISettingsSchema[T]
-}
-
-async function set<T extends ISettingsSchemaKey>(key: T, data: any) {
-  return store.set(key, SettingsSchema.shape[key].parse(data))
-}
-
-async function listSet<T extends IListSettingsSchemaKey>(key: T, data: any) {
-  const arr: ISettingsSchema[T] = await get<T>(key)
-
-  const [entry, rest] = findAndRemove(arr, 'id', data.id)
-  const fullData = entry ? deepmerge(entry, data) : data
-  const safeData = ListSettingsSchema.shape[key].parse(fullData)
-
-  return store.set(key, [safeData, ...rest])
-}
-
-async function remove<T extends ISettingsSchemaKey>(key: T) {
-  return store.delete(key)
-}
-
-async function listRemove<T extends IListSettingsSchemaKey>(key: T, data: any) {
-  const arr: IListSettingsSchema[T][] = await get<T>(key)
-
-  const entry = findAndRemove(arr, 'id', data.id)
-  const fullData = entry ? deepmerge(entry, data) : data
-  const safeData = ListSettingsSchema.shape[key].parse(fullData)
-
-  return store.set(key, [safeData, ...arr])
-}
-
-// async function listDelete<T>(
-//   key: string,
-//   value: string,
-//   subkey: string = 'id'
-// ) {
-//   const data = (await store.get(key)) as T
-
-//   if (!Array.isArray(data)) {
-//     throw new Error(`Key ${key} is not a list`)
-//   }
-//   return store.set(arr.filter((d: any) => d.id !== key))
-// }
-
-async function reset(key?: ISettingsSchemaKey) {
-  if (key) {
-    return store.delete(key)
+  if (index !== -1) {
+    overlays[index] = newItem
+  } else {
+    overlays.push(newItem)
   }
-
-  return store.clear()
+  await store.set('overlays', overlays)
+  return invoke('load_overlays')
 }
 
-async function load() {
-  return store.load()
+async function removeOverlay(id: string): Promise<void> {
+  const overlays = (await store.get<IOverlaySchema[]>('overlays')) || []
+  const newItems = overlays.filter((i) => i.id !== id)
+  await store.set('overlays', newItems)
+  return invoke('load_overlays')
+}
+
+async function setGeneral(values: IGeneralSchema) {
+  await store.set('general', values)
+
+  if (values.startOnStartup) {
+    await enable()
+  } else {
+    await disable()
+  }
 }
 
 export const settings = {
-  get,
-  listGet,
-  set,
-  listSet,
-  reset,
-  load,
-  remove,
-  listRemove,
+  general: {
+    get: () => store.get<IGeneralSchema>('general'),
+    set: setGeneral,
+    new: (values: Partial<IGeneralSchema> = {}) => GeneralSchema.parse(values),
+  },
+  overlays: {
+    get: () => store.get<IOverlaySchema[]>('overlays'),
+    getOne: getOverlay,
+    set: (values: IOverlaySchema[]) => store.set('overlays', values),
+    setOne: setOverlay,
+    removeOne: removeOverlay,
+    new: (values: Partial<IOverlaySchema> = {}) => OverlaySchema.parse(values),
+  },
+  reset: () => store.reset(),
+  reload: () => store.reload(),
 }
 
-export class BadRequestError extends Error {
-  status_code = 400
-  status = 'Bad Request'
-}
+export async function initSettings(): Promise<void> {
+  let general = await settings.general.get()
+  let overlays = await settings.overlays.get()
+  if (!general) {
+    await settings.general.set(settings.general.new())
+    general = await settings.general.get()
+  }
+  if (!overlays) {
+    await settings.overlays.set([])
+    await invoke('load_overlays')
+    overlays = await settings.overlays.get()
+  }
 
-export class NotFoundError extends Error {
-  status_code = 404
-  status = 'Not Found'
+  SettingsSchema.parse({
+    general,
+    overlays,
+  })
 }

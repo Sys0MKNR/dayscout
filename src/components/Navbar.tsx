@@ -1,14 +1,14 @@
+import { ActionIcon, Flex, Group, Text, Tooltip } from '@mantine/core'
+import { IconArrowLeft, IconSettings } from '@tabler/icons-react'
+import type { ReactNode } from 'react'
 import {
-  Group,
-  ActionIcon,
-  Text,
-  Breadcrumbs,
-  Flex,
-  Anchor,
-} from '@mantine/core'
-import { IconChevronUpRight, IconRefresh } from '@tabler/icons-react'
-import { ReactNode } from 'react'
-import { Link, UIMatch, useMatches, useParams } from 'react-router-dom'
+  Link,
+  type UIMatch,
+  useMatches,
+  useNavigate,
+  useParams,
+} from 'react-router'
+import { ReloadIcon } from './ReloadIcon'
 
 interface Handle {
   crumb: (data: any, params: any) => ReactNode
@@ -18,18 +18,15 @@ export function Navbar() {
   const params = useParams()
 
   const matches = useMatches() as UIMatch<any, Handle>[]
-  const crumbs = matches
-    .filter((match) => Boolean(match.handle?.crumb))
-    .map((match) => {
-      const c = match.handle.crumb
-      const label = typeof c === 'string' ? c : c(match.data, params)
+  const currentMatch = matches[matches.length - 1]
 
-      return (
-        <Anchor component={Link} key={match.id} to={match.pathname}>
-          {label}
-        </Anchor>
-      )
-    })
+  console.log('matches', matches)
+
+  const crumb = currentMatch?.handle?.crumb || ''
+  const label =
+    typeof crumb === 'string' ? crumb : crumb(currentMatch.data, params)
+
+  const navigate = useNavigate()
 
   return (
     <Flex
@@ -46,34 +43,36 @@ export function Navbar() {
         justify="space-between"
         align="center"
       >
-        <Group>
-          <Anchor component={Link} to={'/'} c="gray.2">
-            <Text size="xl">Home</Text>
-          </Anchor>
-          <Anchor component={Link} to={'/settings'} c="gray.2">
-            <Text size="xl">Settings</Text>
-          </Anchor>
-        </Group>
-        <Group>
-          <ActionIcon variant="filled" aria-label="Show">
-            <IconChevronUpRight />
-          </ActionIcon>
+        <ActionIcon
+          style={{
+            visibility: currentMatch.id === 'overlays' ? 'hidden' : 'visible',
+          }}
+          variant="filled"
+          aria-label="Back"
+          onClick={() => navigate('/')}
+        >
+          <IconArrowLeft />
+        </ActionIcon>
 
-          <ActionIcon variant="filled" aria-label="Reload">
-            <IconRefresh />
-          </ActionIcon>
+        <Text size="xl" fw={'bolder'}>
+          {label}
+        </Text>
+
+        <Group>
+          <Tooltip label="Settings">
+            <ActionIcon
+              component={Link}
+              to={'/settings'}
+              variant="filled"
+              aria-label="Settings"
+            >
+              <IconSettings />
+            </ActionIcon>
+          </Tooltip>
+
+          <ReloadIcon />
         </Group>
       </Group>
-      <Flex
-        style={{
-          flexGrow: 1,
-        }}
-        px="md"
-        bg="dark.9"
-        align={'center'}
-      >
-        <Breadcrumbs>{crumbs}</Breadcrumbs>
-      </Flex>
     </Flex>
   )
 }

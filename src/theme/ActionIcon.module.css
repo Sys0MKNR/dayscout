@@ -1,0 +1,6 @@
+.root {
+  &:disabled,
+  &[data-disabled] {
+    background-color: transparent;
+  }
+}

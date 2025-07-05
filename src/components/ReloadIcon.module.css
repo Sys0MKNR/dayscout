@@ -1,0 +1,16 @@
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading {
+  animation: reload-icon-spin 2s infinite;
+}
+
+.error {
+  color: var(--mantine-color-red-outline);
+}

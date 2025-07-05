@@ -1,40 +1,48 @@
 [package]
 name = "dayscout"
-version = "0.0.4"
+version = "0.1.0"
 description = "A Tauri App"
 authors = ["you"]
-license = ""
-repository = ""
 edition = "2021"
-rust-version = "1.57"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "dayscout_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
 [build-dependencies]
-tauri-build = { version = "1.4", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.4", features = [
-  "clipboard-all",
-  "http-all",
-  "macos-private-api",
-  "system-tray",
-  "window-all",
-] }
-tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-tauri-plugin-positioner = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = [
-  "system-tray",
-] }
-thiserror = "1.0.38"
-itertools = "0.12.1"
+tauri = { version = "2", features = [ "tray-icon" ] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri-plugin-store = "2"
+reqwest = { version="0.12.15", features = ["json"] }
+tokio = { version = "1.45.1", features = ["full"] }
+url = "2.5.4"
+humantime = "2.2.0"
+thiserror = "2.0.12"
+base64 = "0.22.1"
+tauri-plugin-log = "2"
+log = "0.4"
+font-kit = "0.14.3"
 
-[features]
-# by default Tauri runs in production mode
-# when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
-default = ["custom-protocol"]
-# this feature is used used for production builds where `devPath` points to the filesystem
-# DO NOT remove this
-custom-protocol = ["tauri/custom-protocol"]
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-autostart = "2"
+tauri-plugin-positioner = "2"
+
+
+[profile.dev]
+incremental = true
+opt-level = 0
+debug = true
+
+[profile.dev.package."*"]
+opt-level = 1
+debug = false

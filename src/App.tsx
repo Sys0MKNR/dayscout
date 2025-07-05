@@ -1,54 +1,41 @@
-import { Suspense } from 'react'
-import {
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
-import { RouterProvider } from 'react-router-dom'
-
-import { router } from './router'
-import Splaschscreen from '@/components_old/Splaschscreen'
-import Loader from '@/components_old/Loader'
-
-import { MantineProvider, createTheme } from '@mantine/core'
-
 import '@mantine/core/styles.css'
-import 'mantine-react-table/styles.css'
-import { ModalsProvider } from '@mantine/modals'
+import '@mantine/notifications/styles.css'
 
-const theme = createTheme({
-  primaryColor: 'purple',
-  colors: {
-    purple: [
-      '#f3edff',
-      '#e0d7fa',
-      '#beabf0',
-      '#9a7ce6',
-      '#7c56de',
-      '#683dd9',
-      '#5f2fd8',
-      '#4f23c0',
-      '#451eac',
-      '#3a1899',
-    ],
-  },
-})
-const queryClient = new QueryClient({
-  queryCache: new QueryCache({
-    onError: (error) => console.error(error.message),
-  }),
-})
+import { Loader, MantineProvider } from '@mantine/core'
+import { ModalsProvider } from '@mantine/modals'
+import { Notifications } from '@mantine/notifications'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Suspense, useEffect } from 'react'
+import { RouterProvider } from 'react-router'
+import { initSettings } from './lib/settings'
+import { router } from './router'
+import { theme } from './theme/theme'
+
+const queryClient = new QueryClient({})
 
 function App() {
+  const init = async () => {
+    await initSettings()
+    await queryClient.resetQueries()
+  }
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: init is only called once>
+  useEffect(() => {
+    init()
+  }, [])
+
   return (
     <MantineProvider theme={theme} defaultColorScheme="dark">
+      <Notifications
+        containerWidth={200}
+        position="bottom-left"
+        limit={3}
+        autoClose={2000}
+      />
       <Suspense fallback={<Loader />}>
         <ModalsProvider>
           <QueryClientProvider client={queryClient}>
-            <RouterProvider
-              router={router}
-              fallbackElement={<Splaschscreen />}
-            />
+            <RouterProvider router={router} />
           </QueryClientProvider>
         </ModalsProvider>
       </Suspense>
