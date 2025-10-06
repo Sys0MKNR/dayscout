@@ -18,12 +18,12 @@ import {
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { settings } from '../../lib/settings'
+import { deleteOverlay, getOverlays, setOverlayEnabled } from '../../lib/api'
 
 export function OverlaysView() {
   const query = useQuery({
     queryKey: ['overlays'],
-    queryFn: () => settings.overlays.get(),
+    queryFn: () => getOverlays(),
   })
 
   const queryClient = useQueryClient()
@@ -51,7 +51,12 @@ export function OverlaysView() {
         }}
       >
         <Center>
-          <Anchor size="xl" component={Link} to={`/overlay/${o.id}`}>
+          <Anchor
+            size="xl"
+            component={Link}
+            to={`/overlay/${o.id}`}
+            viewTransition
+          >
             {o.name}
           </Anchor>
         </Center>
@@ -65,10 +70,7 @@ export function OverlaysView() {
             <Menu.Dropdown>
               <Menu.Item
                 onClick={async () => {
-                  await settings.overlays.setOne({
-                    id: o.id,
-                    enabled: !o.enabled,
-                  })
+                  await setOverlayEnabled(o.id, !o.enabled)
                   queryClient.invalidateQueries({ queryKey: ['overlays'] })
                 }}
                 leftSection={
@@ -81,7 +83,7 @@ export function OverlaysView() {
                 color="red"
                 leftSection={<IconTrash size={14} />}
                 onClick={async () => {
-                  await settings.overlays.removeOne(o.id)
+                  await deleteOverlay(o.id)
                   queryClient.invalidateQueries({ queryKey: ['overlays'] })
                 }}
               >
@@ -110,7 +112,7 @@ export function OverlaysView() {
         }}
         size="48"
         variant="filled"
-        onClick={() => navigate('/overlay/new')}
+        onClick={() => navigate('/overlay/new', { viewTransition: true })}
       >
         <IconPlus />
       </ActionIcon>

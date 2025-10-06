@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
-use settings::Settings;
+use config::Config;
 use tauri::{
     AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize, WebviewWindow, WindowEvent,
 };
@@ -15,28 +15,26 @@ use crate::windows::get_or_create_window;
 
 mod api;
 mod cmd;
-mod settings;
+mod config;
 mod task;
 mod tray;
 mod utils;
 mod windows;
 
 async fn load_overlays(app_handle: &AppHandle) -> Result<(), Error> {
-    let settings: Settings = settings::load_setings(&app_handle)
-        .map_err(|e: Error| utils::Error::OverlaysLoadFailed { err: e.to_string() })?;
+    let config = app_handle.state::<Config>();
+    let config = config.data.lock().await;
 
     let mut windows: HashMap<String, WebviewWindow> = app_handle.webview_windows();
     windows.remove("main");
 
-    let task_manager = app_handle
-        .try_state::<Arc<task::TaskManager>>()
-        .ok_or(Error::TaskManagerNotFound)?;
+    let task_manager = app_handle.state::<task::TaskManager>();
 
     task_manager.stop_all().await;
 
     let mut new_windows: Vec<String> = vec![];
 
-    for o in settings.overlays {
+    for o in &config.overlays {
         if !o.enabled {
             continue;
         }
@@ -63,7 +61,7 @@ async fn load_overlays(app_handle: &AppHandle) -> Result<(), Error> {
             let monitor_name = match monitor.name() {
                 Some(name) => name,
                 None => {
-                     log::debug!("Monitor was removed. Skipping overlay creation for it.");
+                    log::debug!("Monitor was removed. Skipping overlay creation for it.");
                     continue;
                 }
             };
@@ -79,11 +77,11 @@ async fn load_overlays(app_handle: &AppHandle) -> Result<(), Error> {
             w.set_position(monitor.position().clone())?;
             w.set_ignore_cursor_events(!o.interactive)?;
 
-            match o.position.as_str() {
-                "preset" => {
+            match o.position {
+                config::PositionType::Preset => {
                     w.move_window(o.get_preset_position()?)?;
                 }
-                "custom" => {
+                config::PositionType::Custom => {
                     let window_pos = w.inner_position()?;
                     let new_pos = PhysicalPosition {
                         x: window_pos.x + o.custom_position.x,
@@ -107,7 +105,7 @@ async fn load_overlays(app_handle: &AppHandle) -> Result<(), Error> {
         .iter()
         .filter(|(label, _)| !new_windows.contains(label))
         .try_for_each(|w| {
-             log::debug!("closing window: {}", w.0);
+            log::debug!("closing window: {}", w.0);
             w.1.destroy()
         })?;
 
@@ -115,38 +113,65 @@ async fn load_overlays(app_handle: &AppHandle) -> Result<(), Error> {
 }
 
 pub fn load_overlays_async(app_handle: AppHandle) {
-    tauri::async_runtime::block_on(async move { load_overlays(&app_handle).await })
-        .unwrap_or_else(|e| {
+    tauri::async_runtime::block_on(async move { load_overlays(&app_handle).await }).unwrap_or_else(
+        |e| {
             log::error!("Failed to load overlays: {}", e);
-        });
+        },
+    );
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let task_manager = task::TaskManager::create();
-
     tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_autostart::init(
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
             None,
         ))
-        .manage(task_manager)
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_positioner::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![cmd::load_overlays, 
-            cmd::font_families])
+        .invoke_handler(tauri::generate_handler![
+            cmd::load_overlays,
+            cmd::get_fonts,
+            cmd::get_overlays,
+            cmd::get_overlay,
+            cmd::set_overlay,
+            cmd::set_overlay_enabled,
+            cmd::delete_overlay,
+            cmd::get_settings,
+            cmd::set_settings,
+        ])
         .setup(|app| {
-            create_tray(app.app_handle())?;
+            let app_handle = app.handle();
 
-            let settings: Settings = settings::load_setings(&app.app_handle())?;
+            let result: Result<(), Error> = tauri::async_runtime::block_on(async move {
+                let config_data = Config::load_from_file(&app_handle.clone())?;
+                let only_overlays_on_start = config_data.settings.only_overlays_on_start;
 
-            if !settings.general.only_overlays_on_start {
-                show_or_create_window("main", app.app_handle())?;
-            }
+                let config = Config {
+                    app_handle: app_handle.clone(),
+                    data: Arc::new(tokio::sync::Mutex::new(config_data)),
+                };
 
-            load_overlays_async(app.app_handle().clone());
+                app_handle.manage(config);
+                app_handle.manage(task::TaskManager::new());
+
+                create_tray(&app_handle.clone())?;
+
+                if !only_overlays_on_start {
+                    show_or_create_window("main", app_handle)?;
+                }
+
+                load_overlays(&app_handle.clone()).await?;
+
+                Ok(())
+            });
+
+            result.unwrap_or_else(|e| {
+                log::error!("Failed to initialize application: {}", e);
+                app_handle.exit(1);
+            });
 
             Ok(())
         })

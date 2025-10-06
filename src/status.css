@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/complexity/noImportantStyles: <I know what I am doing. kinda> */
 body {
   padding: 0;
   margin: 0;
@@ -33,8 +34,8 @@ body {
   position: absolute;
   inset: 0;
   --g: currentColor 14.5px, #0000 0 calc(100% - 14.5px), currentColor 0;
-  background: linear-gradient(45deg, var(--g)),
-    linear-gradient(-45deg, var(--g));
+  background:
+    linear-gradient(45deg, var(--g)), linear-gradient(-45deg, var(--g));
   animation: l7 1.5s infinite cubic-bezier(0.3, 1, 0, 1);
 }
 @keyframes l7 {

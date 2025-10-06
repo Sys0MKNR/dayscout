@@ -13,52 +13,23 @@ import {
   Text,
   TextInput,
 } from '@mantine/core'
-import { useQuery } from '@tanstack/react-query'
-import { invoke } from '@tauri-apps/api/core'
-import { availableMonitors } from '@tauri-apps/api/window'
-import { useEffect, useState } from 'react'
+import { Controller } from 'react-hook-form'
+import { useLoaderData } from 'react-router'
 import {
-  type IOverlaySchema,
-  PositionOptions,
-  PositionTypeOptions,
+  type Overlay,
+  PositionTypes,
+  WindowPositionsOptions,
 } from '../lib/types'
 import { Form, type FormProps } from './Form'
 import { StatusItem } from './StatusItem'
 
 const StatusItemNames = ['value', 'icon', 'delta', 'lastUpdated'] as const
 
-export function OverlayForm(props: FormProps<IOverlaySchema>) {
-  const { form, query } = props
+export function OverlayForm(props: FormProps<Overlay>) {
+  const { form } = props
 
-  const monitorQuery = useQuery({
-    queryKey: ['monitors'],
-    queryFn: async () => {
-      const monitors = await availableMonitors()
-      return monitors.map((m, i) => m.name || i.toString())
-    },
-    initialData: [],
-  })
-
-  const fontQuery = useQuery({
-    queryKey: ['fonts'],
-    queryFn: async () => {
-      return await invoke<string[]>('font_families')
-    },
-    initialData: [],
-  })
-
-  const [allMonitors, setAllMonitors] = useState<boolean | undefined>()
-
-  const allMonitorsProps = form.getInputProps('allMonitors', {
-    type: 'checkbox',
-  })
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: form can be ignored
-  useEffect(() => {
-    if (!query.data) return
-    form.initialize(query.data)
-    setAllMonitors(query.data.allMonitors)
-  }, [query.data])
+  const { control } = form
+  const { monitors, fonts } = useLoaderData()
 
   return (
     <Form {...props}>
@@ -71,85 +42,139 @@ export function OverlayForm(props: FormProps<IOverlaySchema>) {
 
         <Tabs.Panel value="general">
           <Stack>
-            <TextInput
-              disabled
-              label="ID"
-              key={form.key('id')}
-              {...form.getInputProps('id')}
+            <Controller
+              name="id"
+              control={control}
+              render={({ field }) => (
+                <TextInput disabled label="ID" {...field} />
+              )}
             />
-            <TextInput
-              label="Name"
-              key={form.key('name')}
-              {...form.getInputProps('name')}
-            />
-            <Checkbox
-              label="Enabled"
-              key={form.key('enabled')}
-              {...form.getInputProps('enabled', { type: 'checkbox' })}
-            />
-
-            <Group align="flex-end" gap={16}>
-              <Checkbox
-                label="All Monitors"
-                key={form.key('allMonitors')}
-                {...allMonitorsProps}
-                onChange={(e) => {
-                  setAllMonitors(e.currentTarget.checked)
-                  allMonitorsProps.onChange(e)
-                }}
+            <Group>
+              <Controller
+                name="name"
+                rules={{ required: true }}
+                control={control}
+                render={({ field, fieldState }) => (
+                  <TextInput
+                    style={{ flex: 1 }}
+                    label="Name"
+                    error={fieldState.error?.message}
+                    {...field}
+                  />
+                )}
               />
-              <MultiSelect
-                disabled={allMonitors}
-                label="Monitors"
-                key={form.key('monitors')}
-                {...form.getInputProps('monitors')}
-                data={monitorQuery.data}
-                clearable
-                searchable
+              <Controller
+                name="enabled"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    style={{ alignSelf: 'flex-end' }}
+                    label="Enabled"
+                    checked={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
             </Group>
 
-            <TextInput
-              label="URL"
-              key={form.key('url')}
-              {...form.getInputProps('url')}
-              placeholder="https://example.com"
+            <Group align="flex-end" gap={16}>
+              <Controller
+                name="allMonitors"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    label="All Monitors"
+                    checked={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Controller
+                name="monitors"
+                control={control}
+                render={({ field }) => (
+                  <MultiSelect
+                    label="Monitors"
+                    data={monitors}
+                    clearable
+                    searchable
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            </Group>
+
+            <Controller
+              name="url"
+              control={control}
+              rules={{ required: 'is required' }}
+              render={({ field, fieldState }) => (
+                <TextInput
+                  label="URL"
+                  placeholder="https://example.com"
+                  error={fieldState.error?.message}
+                  {...field}
+                />
+              )}
             />
-            <TextInput
-              label="Token"
-              key={form.key('token')}
-              {...form.getInputProps('token')}
-              placeholder="Your API token"
+            <Controller
+              name="token"
+              control={control}
+              render={({ field }) => (
+                <TextInput
+                  label="Token"
+                  placeholder="Your API token"
+                  {...field}
+                />
+              )}
             />
-            <NumberInput
-              min={1}
-              label="Fetch Interval (ms)"
-              key={form.key('fetchInterval')}
-              {...form.getInputProps('fetchInterval')}
-              placeholder="Fetch interval in milliseconds"
+            <Controller
+              name="fetchInterval"
+              control={control}
+              render={({ field, fieldState }) => (
+                <NumberInput
+                  min={1}
+                  label="Fetch Interval (s)"
+                  placeholder="Fetch interval in seconds"
+                  error={fieldState.error?.message}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
             />
 
             <Fieldset legend="Thresholds">
               <Group>
-                <NumberInput
-                  label="High"
-                  key={form.key('thresholds.bgHigh')}
-                  {...form.getInputProps('thresholds.bgHigh')}
+                <Controller
+                  name="thresholds.high"
+                  control={control}
+                  render={({ field }) => (
+                    <NumberInput label="High" {...field} />
+                  )}
+                  rules={{ max: 1000 }}
                 />
-                <NumberInput
-                  label="Low"
-                  key={form.key('thresholds.bgLow')}
-                  {...form.getInputProps('thresholds.bgLow')}
+                <Controller
+                  name="thresholds.low"
+                  control={control}
+                  render={({ field }) => <NumberInput label="Low" {...field} />}
+                  rules={{ max: 1000 }}
                 />
-                <NumberInput
-                  label="Target Bottom"
-                  key={form.key('thresholds.bgTargetBottom')}
-                  {...form.getInputProps('thresholds.bgTargetBottom')}
+                <Controller
+                  name="thresholds.targetBottom"
+                  control={control}
+                  render={({ field }) => (
+                    <NumberInput label="Target Bottom" {...field} />
+                  )}
+                  rules={{ max: 1000 }}
                 />
-                <NumberInput
-                  label="Target Top"
-                  key={form.key('thresholds.bgTargetTop')}
-                  {...form.getInputProps('thresholds.bgTargetTop')}
+                <Controller
+                  name="thresholds.targetTop"
+                  control={control}
+                  render={({ field }) => (
+                    <NumberInput label="Target Top" {...field} />
+                  )}
+                  rules={{ max: 1000 }}
                 />
               </Group>
             </Fieldset>
@@ -157,150 +182,248 @@ export function OverlayForm(props: FormProps<IOverlaySchema>) {
         </Tabs.Panel>
 
         <Tabs.Panel value="appearance">
-          <Stack gap={32} align="flex-start">
+          <Stack gap={32} align="flex-start" justify="flex-start">
             <Group align="center">
-              <NumberInput
-                label="Width"
-                key={form.key('width')}
-                {...form.getInputProps('width')}
-                placeholder="Width in pixels"
+              <Controller
+                name="width"
+                control={control}
+                rules={{ min: 1 }}
+                render={({ field, fieldState }) => (
+                  <NumberInput
+                    label="Width"
+                    placeholder="Width in pixels"
+                    error={fieldState.error?.message}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
-              <NumberInput
-                label="Height"
-                key={form.key('height')}
-                {...form.getInputProps('height')}
-                placeholder="Height in pixels"
+              <Controller
+                name="height"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <NumberInput
+                    label="Height"
+                    placeholder="Height in pixels"
+                    error={fieldState.error?.message}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
-              <NumberInput
-                label="Padding"
-                key={form.key('padding')}
-                {...form.getInputProps('padding')}
-                placeholder="Padding in pixels"
-                min={0}
-                step={1}
+              <Controller
+                name="padding"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <NumberInput
+                    label="Padding"
+                    placeholder="Padding in pixels"
+                    min={0}
+                    step={1}
+                    error={fieldState.error?.message}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
             </Group>
 
-            <Select
-              label="Font"
-              key={form.key('font')}
-              {...form.getInputProps('font')}
-              data={fontQuery.data}
-              placeholder="Select a font"
-              searchable
+            <Controller
+              name="font"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Select
+                  label="Font"
+                  data={fonts}
+                  placeholder="Select a font"
+                  searchable
+                  error={fieldState.error?.message}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
             />
 
             <Group>
               <Text fw={500} size="sm">
                 Opacity
               </Text>
-              <Slider
-                w={300}
-                defaultValue={1}
-                key={form.key('opacity')}
-                {...form.getInputProps('opacity')}
-                min={0}
-                max={1}
-                step={0.01}
-                marks={[
-                  { value: 0, label: '0%' },
-                  { value: 0.25, label: '25%' },
-                  { value: 0.5, label: '50%' },
-                  { value: 0.75, label: '75%' },
-                  { value: 1, label: '100%' },
-                ]}
+              <Controller
+                name="opacity"
+                control={control}
+                render={({ field }) => (
+                  <Slider
+                    w={300}
+                    min={0}
+                    max={100}
+                    step={1}
+                    marks={[
+                      { value: 0, label: '0%' },
+                      { value: 25, label: '25%' },
+                      { value: 50, label: '50%' },
+                      { value: 75, label: '75%' },
+                      { value: 100, label: '100%' },
+                    ]}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
             </Group>
             <Fieldset legend="Colors">
               <Group align="end">
-                <ColorInput
-                  label="Urgent"
-                  key={form.key('colors.urgent')}
-                  {...form.getInputProps('colors.urgent')}
-                  format="hex"
+                <Controller
+                  name="colors.urgent"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <ColorInput
+                      label="Urgent"
+                      format="hex"
+                      error={fieldState.error?.message}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
                 />
-                <ColorInput
-                  label="Warn"
-                  key={form.key('colors.warn')}
-                  {...form.getInputProps('colors.warn')}
-                  format="hex"
+                <Controller
+                  name="colors.warn"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <ColorInput
+                      label="Warn"
+                      format="hex"
+                      error={fieldState.error?.message}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
                 />
-                <ColorInput
-                  label="Ok"
-                  key={form.key('colors.ok')}
-                  {...form.getInputProps('colors.ok')}
-                  format="hex"
+                <Controller
+                  name="colors.ok"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <ColorInput
+                      label="Ok"
+                      format="hex"
+                      error={fieldState.error?.message}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
                 />
-                <ColorInput
-                  label=" Background"
-                  key={form.key('colors.background')}
-                  {...form.getInputProps('colors.background')}
-                  format="hex"
+                <Controller
+                  name="colors.background"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <ColorInput
+                      label="Background"
+                      format="hex"
+                      error={fieldState.error?.message}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
                 />
-                <Checkbox
-                  label="Transparent"
-                  description={null}
-                  key={form.key('transparent')}
-                  {...form.getInputProps('transparent', { type: 'checkbox' })}
+                <Controller
+                  name="transparent"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox
+                      label="Transparent"
+                      checked={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
                 />
               </Group>
             </Fieldset>
 
             <Group>
-              <Checkbox
-                label="Interactive"
-                description={null}
-                key={form.key('interactive')}
-                {...form.getInputProps('interactive', { type: 'checkbox' })}
+              <Controller
+                name="interactive"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    label="Interactive"
+                    checked={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
             </Group>
-
-            <Tabs
-              defaultValue="preset"
-              variant="pills"
-              key={form.key('position')}
-              {...form.getInputProps('position')}
-            >
-              <Tabs.List mb={16}>
-                {PositionTypeOptions.map((p) => (
-                  <Tabs.Tab key={p.value} value={p.value}>
-                    {p.label}
-                  </Tabs.Tab>
-                ))}
-              </Tabs.List>
-              <Tabs.Panel value="preset">
-                <Select
-                  label="Preset Position"
-                  key={form.key('presetPosition')}
-                  {...form.getInputProps('presetPosition')}
-                  data={PositionOptions}
-                  placeholder="Select a preset position"
-                />
-              </Tabs.Panel>
-
-              <Tabs.Panel value="custom">
-                <Group>
-                  <NumberInput
-                    label="Custom X Position"
-                    key={form.key('customPosition.x')}
-                    {...form.getInputProps('customPosition.x')}
-                    placeholder="X position in pixels"
-                  />
-                  <NumberInput
-                    label="Custom Y Position"
-                    key={form.key('customPosition.y')}
-                    {...form.getInputProps('customPosition.y')}
-                    placeholder="Y position in pixels"
-                  />
-                </Group>
-              </Tabs.Panel>
-            </Tabs>
+            <Controller
+              name="position"
+              control={control}
+              render={({ field }) => (
+                <Tabs
+                  defaultValue={field.value}
+                  variant="pills"
+                  orientation="vertical"
+                  value={field.value}
+                  onChange={field.onChange}
+                >
+                  <Tabs.List mr={32}>
+                    {PositionTypes.map((p) => (
+                      <Tabs.Tab key={p} value={p}>
+                        {p}
+                      </Tabs.Tab>
+                    ))}
+                  </Tabs.List>
+                  <Tabs.Panel value="Preset">
+                    <Controller
+                      name="presetPosition"
+                      control={control}
+                      render={({ field: presetField, fieldState }) => (
+                        <Select
+                          label="Preset Position"
+                          data={WindowPositionsOptions}
+                          placeholder="Select a preset position"
+                          value={presetField.value}
+                          onChange={presetField.onChange}
+                          error={fieldState.error?.message}
+                        />
+                      )}
+                    />
+                  </Tabs.Panel>
+                  <Tabs.Panel value="Custom">
+                    <Group>
+                      <Controller
+                        name="customPosition.x"
+                        control={control}
+                        render={({ field, fieldState }) => (
+                          <NumberInput
+                            label="Custom X Position"
+                            placeholder="X position in pixels"
+                            value={field.value}
+                            onChange={field.onChange}
+                            error={fieldState.error?.message}
+                          />
+                        )}
+                      />
+                      <Controller
+                        name="customPosition.y"
+                        control={control}
+                        render={({ field, fieldState }) => (
+                          <NumberInput
+                            label="Custom Y Position"
+                            placeholder="Y position in pixels"
+                            value={field.value}
+                            onChange={field.onChange}
+                            error={fieldState.error?.message}
+                          />
+                        )}
+                      />
+                    </Group>
+                  </Tabs.Panel>
+                </Tabs>
+              )}
+            />
           </Stack>
         </Tabs.Panel>
         <Tabs.Panel value="items">
           <Flex gap={16} wrap="wrap" justify={'space-between'}>
             {StatusItemNames.map((name) => (
-              <StatusItem key={name} name={name} form={form} />
+              <StatusItem key={name} name={name} control={control} />
             ))}
           </Flex>
         </Tabs.Panel>

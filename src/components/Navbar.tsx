@@ -11,20 +11,19 @@ import {
 import { ReloadIcon } from './ReloadIcon'
 
 interface Handle {
+  // biome-ignore lint/suspicious/noExplicitAny: <really a waste of time to try to type this>
   crumb: (data: any, params: any) => ReactNode
 }
 
 export function Navbar() {
   const params = useParams()
 
-  const matches = useMatches() as UIMatch<any, Handle>[]
+  const matches = useMatches() as UIMatch<unknown, Handle>[]
   const currentMatch = matches[matches.length - 1]
-
-  console.log('matches', matches)
 
   const crumb = currentMatch?.handle?.crumb || ''
   const label =
-    typeof crumb === 'string' ? crumb : crumb(currentMatch.data, params)
+    typeof crumb === 'string' ? crumb : crumb(currentMatch.loaderData, params)
 
   const navigate = useNavigate()
 
@@ -49,7 +48,7 @@ export function Navbar() {
           }}
           variant="filled"
           aria-label="Back"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/', { viewTransition: true })}
         >
           <IconArrowLeft />
         </ActionIcon>
@@ -65,6 +64,7 @@ export function Navbar() {
               to={'/settings'}
               variant="filled"
               aria-label="Settings"
+              viewTransition
             >
               <IconSettings />
             </ActionIcon>

@@ -2,8 +2,6 @@
 pub enum Error {
     #[error("invalid settings file")]
     InvalidSettingsFile,
-    #[error("task manager not found")]
-    TaskManagerNotFound,
     #[error("failed to reload overlays: {err:?} ")]
     OverlaysLoadFailed { err: String },
     #[error("{msg:?}")]
@@ -20,6 +18,8 @@ pub enum Error {
     Reqwest(#[from] reqwest::Error),
     #[error(transparent)]
     SystemTimeError(#[from] std::time::SystemTimeError),
+    #[error(transparent)]
+    Io(#[from] std::io::Error),
 }
 
 impl serde::Serialize for Error {

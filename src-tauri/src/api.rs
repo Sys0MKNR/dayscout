@@ -5,7 +5,7 @@ use serde_json::Value;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use url::{ParseError, Url};
 
-use crate::settings::Overlay;
+use crate::config::Overlay;
 use crate::utils::Error;
 
 pub async fn extend_overlay_with_external_data(

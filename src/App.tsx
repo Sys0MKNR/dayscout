@@ -7,15 +7,15 @@ import { Notifications } from '@mantine/notifications'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Suspense, useEffect } from 'react'
 import { RouterProvider } from 'react-router'
-import { initSettings } from './lib/settings'
+// import { initSettings } from './lib/settings'
 import { router } from './router'
 import { theme } from './theme/theme'
 
-const queryClient = new QueryClient({})
+const queryClient = new QueryClient()
 
 function App() {
   const init = async () => {
-    await initSettings()
+    // await initSettings()
     await queryClient.resetQueries()
   }
 

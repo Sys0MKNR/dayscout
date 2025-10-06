@@ -48,12 +48,13 @@ const Directions = [
 
 class Mock {
   private updater: NodeJS.Timeout
-  private cache: Map<string, any>
+  private cache: Map<string, unknown>
 
   constructor() {
     this.cache = new Map()
     this.update()
     this.updater = setInterval(() => this.update.apply(this), 2000)
+    this.updater.unref()
   }
 
   public get<T>(key: string): T {
@@ -87,7 +88,7 @@ class Mock {
 
     const oldStatusValue = oldStatus?.bgnow?.sgvs[0]?.scaled
 
-    let delta: any
+    let delta: INSStatus['delta']
 
     if (oldStatusValue) {
       const newDeltaValue = newStatusValue - oldStatusValue

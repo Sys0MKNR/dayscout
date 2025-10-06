@@ -4,10 +4,8 @@ import {
   Fieldset,
   Group,
   LoadingOverlay,
-  Text,
   Tooltip,
 } from '@mantine/core'
-import type { UseFormReturnType } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import {
   IconArrowLeft,
@@ -15,48 +13,38 @@ import {
   IconRestore,
   IconTrash,
 } from '@tabler/icons-react'
-import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { useNavigate } from 'react-router'
 
-export interface FormActionsProps {
-  back?: boolean | (() => void)
-  remove?: () => void
-  reset?: boolean | (() => void)
-  save?: boolean | (() => void)
-}
+import type { FieldValues, UseFormReturn } from 'react-hook-form'
 
-export interface FormProps<T> {
-  form: UseFormReturnType<T>
-  formActions?: FormActionsProps
+export interface FormProps<T extends FieldValues> {
+  form: UseFormReturn<T>
   children?: React.ReactNode
   legend?: string
-  query: UseQueryResult<T | null | undefined, Error>
-  mutation: UseMutationResult<void, Error, T, unknown>
   saveAlwaysEnabled?: boolean
+  onSubmit: (values: T) => Promise<void>
+  onBack?: () => void
+  onRemove?: () => void
+  onReset?: () => void
+  loading?: boolean
+  saving?: boolean
 }
 
-export function Form<T>(props: FormProps<T>) {
+export function Form<T extends FieldValues>(props: FormProps<T>) {
+  console.log('render Form')
+
   const {
     form,
-    formActions,
     legend,
-    query,
-    mutation,
     saveAlwaysEnabled = false,
+    onBack,
+    onRemove,
+    onReset,
+    loading = false,
+    saving = false,
   } = props
 
-  const {
-    back = true,
-    remove,
-    reset = () => form.reset(),
-    save = true,
-  } = formActions || {}
-
-  const navigate = useNavigate()
-
-  const resetHandler = typeof reset === 'function' ? reset : () => form.reset()
-  const backHandler = typeof back === 'function' ? back : () => navigate(-1)
+  console.log(form.formState.errors)
 
   const onSubmit = useCallback(
     async (values: T) => {
@@ -68,24 +56,19 @@ export function Form<T>(props: FormProps<T>) {
         withCloseButton: false,
       })
       try {
-        await mutation.mutateAsync(values)
-      } catch (_) {
+        await props.onSubmit(values)
+      } catch (e) {
+        console.error('Error saving form:', e)
         notifications.update({
           id,
           color: 'red',
           title: 'Error',
-          message: mutation.error?.toString(),
+          message: e.toString(),
           loading: false,
           autoClose: 2000,
           withCloseButton: true,
         })
         return
-      }
-      const newData = await query.refetch()
-
-      if (newData.data) {
-        form.setValues(newData.data)
-        form.resetDirty(newData.data)
       }
 
       notifications.update({
@@ -98,29 +81,28 @@ export function Form<T>(props: FormProps<T>) {
         withCloseButton: true,
       })
     },
-    [query, mutation, form],
+    [props.onSubmit],
   )
-
-  if (query.error) return <Text c="red">{query.error.toString()}</Text>
 
   return (
     <form
-      onSubmit={form.onSubmit(onSubmit)}
+      onSubmit={form.handleSubmit(onSubmit)}
       style={{
         maxHeight:
           'calc(100vh - var(--app-shell-header-offset) - var(--app-shell-padding) * 2)',
         overflow: 'auto',
       }}
+      autoComplete="off"
     >
       <Box pos="relative">
         <LoadingOverlay
           transitionProps={{ transition: 'fade', duration: 300 }}
-          visible={query.isLoading}
+          visible={loading}
           zIndex={1000}
           overlayProps={{ radius: 'sm', blur: 2 }}
         />
         <Fieldset
-          disabled={mutation.isPending}
+          disabled={saving}
           style={{
             background: 'var(--mantine-primary-color-filled)',
             position: 'fixed',
@@ -136,60 +118,63 @@ export function Form<T>(props: FormProps<T>) {
               justifyContent: 'flex-end',
             }}
           >
-            {back && (
+            {onBack && (
               <Tooltip
                 label="Back"
                 color="var(--mantine-primary-color-filled)"
-                onClick={backHandler}
+                onClick={onBack}
               >
                 <ActionIcon aria-label="Back" variant="filled">
                   <IconArrowLeft />
                 </ActionIcon>
               </Tooltip>
             )}
-
-            {remove && (
-              <Tooltip label="Delete" onClick={remove}>
+            {onRemove && (
+              <Tooltip label="Delete" onClick={onRemove}>
                 <ActionIcon radius={'xs'} aria-label="Delete" variant="filled">
                   <IconTrash color="var(--mantine-color-red-outline)" />
                 </ActionIcon>
               </Tooltip>
             )}
-
-            {reset && (
+            {onReset && (
               <Tooltip
                 label="Reset"
                 color="var(--mantine-primary-color-filled)"
-                onClick={resetHandler}
+                onClick={onReset}
               >
                 <ActionIcon
                   aria-label="Reset"
                   variant="filled"
-                  disabled={form.isDirty() === false || mutation.isPending}
+                  disabled={form.formState.isDirty === false || saving}
                 >
                   <IconRestore />
                 </ActionIcon>
               </Tooltip>
             )}
 
-            {save && (
-              <Tooltip label="Save" color="var(--mantine-primary-color-filled)">
-                <ActionIcon
-                  aria-label="Save"
-                  type="submit"
-                  variant="filled"
-                  disabled={
-                    mutation.isPending ||
-                    (!saveAlwaysEnabled && form.isDirty() === false)
-                  }
-                >
-                  <IconDeviceFloppy />
-                </ActionIcon>
-              </Tooltip>
-            )}
+            <Tooltip label="Save" color="var(--mantine-primary-color-filled)">
+              <ActionIcon
+                aria-label="Save"
+                type="submit"
+                variant="filled"
+                // disabled={
+                //   saving || (!saveAlwaysEnabled && form.isDirty() === false)
+                // }
+              >
+                <IconDeviceFloppy />
+              </ActionIcon>
+            </Tooltip>
           </Group>
         </Fieldset>
-        <Fieldset legend={legend} bd={0}>
+        <Fieldset
+          legend={legend}
+          style={{
+            borderColor:
+              Object.keys(form.formState.errors).length > 0
+                ? 'var(--mantine-color-red-outline)'
+                : 'transparent',
+          }}
+        >
           {props.children}
         </Fieldset>
       </Box>

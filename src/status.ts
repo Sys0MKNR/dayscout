@@ -10,7 +10,7 @@ import { type Event, listen } from '@tauri-apps/api/event'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { settings } from './lib/settings'
-import type { IOverlaySchema, Status, StatusPayload } from './lib/types'
+import type { Overlay, Status, StatusPayload } from './lib/types'
 
 dayjs.extend(relativeTime)
 
@@ -31,7 +31,7 @@ const lastUpdatedBoxText = document.getElementById(
   'last-updated-text',
 ) as HTMLSpanElement
 
-let overlay: IOverlaySchema | null = null
+let overlay: Overlay | null = null
 let width = 0
 let height = 0
 let lastData: Status | null = null

@@ -6,7 +6,7 @@ use tokio::time::interval;
 
 use crate::{
     api::{extend_overlay_with_external_data, get_status, StatusPayload},
-    settings::Overlay,
+    config::Overlay,
 };
 
 pub struct TaskManager {
@@ -22,10 +22,6 @@ impl TaskManager {
             client: Client::new(),
             tasks: std::sync::Arc::new(tokio::sync::RwLock::new(std::collections::HashMap::new())),
         }
-    }
-
-    pub fn create() -> std::sync::Arc<TaskManager> {
-        std::sync::Arc::new(TaskManager::new())
     }
 
     pub async fn add(&self, mut overlay: Overlay, app_handle: &AppHandle) {
@@ -52,7 +48,7 @@ impl TaskManager {
                 return;
             }
 
-            let mut interval = interval(Duration::from_millis(overlay.fetch_interval));
+            let mut interval = interval(Duration::from_secs_f32(overlay.fetch_interval));
 
             let mut error_count = 0;
             let max_errors = 5;
@@ -74,8 +70,7 @@ impl TaskManager {
                 let payload =
                     StatusPayload::from_result(overlay.id.clone(), status, error_count, stop);
 
-                 log::debug!("{:?}", payload);
-
+                log::debug!("{:?}", payload);
 
                 handle.emit("status-update", payload).unwrap();
                 if stop {
