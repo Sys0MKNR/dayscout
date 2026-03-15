@@ -85,15 +85,15 @@ impl TaskManager {
         }
     }
 
-    pub async fn stop(&self, id: &str) -> bool {
-        let mut tasks_lock = self.tasks.write().await;
-        if let Some(task) = tasks_lock.remove(id) {
-            task.abort();
-            true
-        } else {
-            false
-        }
-    }
+    // pub async fn stop(&self, id: &str) -> bool {
+    //     let mut tasks_lock = self.tasks.write().await;
+    //     if let Some(task) = tasks_lock.remove(id) {
+    //         task.abort();
+    //         true
+    //     } else {
+    //         false
+    //     }
+    // }
 
     pub async fn stop_all(&self) {
         let mut tasks_lock = self.tasks.write().await;

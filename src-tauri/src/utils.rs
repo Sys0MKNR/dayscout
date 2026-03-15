@@ -1,7 +1,7 @@
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("invalid settings file")]
-    InvalidSettingsFile,
+    // #[error("invalid settings file")]
+    // InvalidSettingsFile,
     #[error("failed to reload overlays: {err:?} ")]
     OverlaysLoadFailed { err: String },
     #[error("{msg:?}")]

@@ -50,18 +50,18 @@ pub fn get_or_create_window(label: &str, app_handle: &AppHandle) -> Result<Webvi
     }
 }
 
-pub fn toggle_window(label: &str, app_handle: &AppHandle) -> Result<WebviewWindow, Error> {
-    let window = match app_handle.get_webview_window(label) {
-        Some(w) => {
-            if w.is_visible()? {
-                w.hide()?;
-            } else {
-                w.show()?;
-            }
-            w
-        }
-        None => show_or_create_window(label, app_handle)?,
-    };
+// pub fn toggle_window(label: &str, app_handle: &AppHandle) -> Result<WebviewWindow, Error> {
+//     let window = match app_handle.get_webview_window(label) {
+//         Some(w) => {
+//             if w.is_visible()? {
+//                 w.hide()?;
+//             } else {
+//                 w.show()?;
+//             }
+//             w
+//         }
+//         None => show_or_create_window(label, app_handle)?,
+//     };
 
-    Ok(window)
-}
+//     Ok(window)
+// }

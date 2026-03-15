@@ -65,15 +65,15 @@ impl Config {
         Ok(config)
     }
 
-    pub async fn load(&mut self) -> Result<&Self, Error> {
-        let config = Self::load_from_file(&self.app_handle)?;
-        let mut self_data = self.data.lock().await;
-        self_data.settings = config.settings.clone();
-        self_data.overlays = config.overlays.clone();
-        self_data.fonts = config.fonts.clone();
+    // pub async fn load(&mut self) -> Result<&Self, Error> {
+    //     let config = Self::load_from_file(&self.app_handle)?;
+    //     let mut self_data = self.data.lock().await;
+    //     self_data.settings = config.settings.clone();
+    //     self_data.overlays = config.overlays.clone();
+    //     self_data.fonts = config.fonts.clone();
 
-        Ok(self)
-    }
+    //     Ok(self)
+    // }
 
     pub async fn save(&self, config_data: &ConfigData) -> Result<(), Error> {
         let dir = self.app_handle.path().app_config_dir()?.join(CONFIG_PATH);
