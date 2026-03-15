@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form'
-import { RouteObject, useFetcher, useLoaderData, useRevalidator } from 'react-router'
+import { RouteObject, useLoaderData, useRevalidator } from 'react-router'
 import { OverlayForm } from '../../components/OverlayForm'
 import { Overlay } from '../../../lib/types'
 import { api } from '../../../lib/api'

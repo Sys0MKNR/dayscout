@@ -1,6 +1,6 @@
-import { ActionIcon, Box, Fieldset, Group, LoadingOverlay, Tooltip } from '@mantine/core'
+import { ActionIcon, Box, Fieldset, Group, Tooltip } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
-import { IconArrowLeft, IconDeviceFloppy, IconRestore, IconTrash } from '@tabler/icons-react'
+import { IconDeviceFloppy, IconRestore, IconTrash } from '@tabler/icons-react'
 import { useCallback, useState } from 'react'
 
 import type { FieldValues, UseFormReturn } from 'react-hook-form'
@@ -25,8 +25,11 @@ export function Form<T extends FieldValues>(props: FormProps<T>) {
     onSubmit: _onSubmit,
   } = props
 
+  const [saving, setSaving] = useState(false)
+
   const onSubmit = useCallback(
     async (values: T) => {
+      setSaving(true)
       const id = notifications.show({
         loading: true,
         title: 'Saving...',
@@ -48,6 +51,8 @@ export function Form<T extends FieldValues>(props: FormProps<T>) {
           withCloseButton: true,
         })
         return
+      } finally {
+        setSaving(false)
       }
 
       notifications.update({
@@ -73,14 +78,8 @@ export function Form<T extends FieldValues>(props: FormProps<T>) {
       autoComplete="off"
     >
       <Box pos="relative">
-        {/* <LoadingOverlay
-          transitionProps={{ transition: 'fade', duration: 300 }}
-          visible={loading}
-          zIndex={1000}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        /> */}
         <Fieldset
-          // disabled={saving}
+          disabled={saving}
           style={{
             background: 'var(--mantine-primary-color-filled)',
             position: 'fixed',
@@ -108,7 +107,6 @@ export function Form<T extends FieldValues>(props: FormProps<T>) {
                 <ActionIcon
                   aria-label="Reset"
                   variant="filled"
-                  // disabled={form.formState.isDirty === false || saving}
                   disabled={form.formState.isDirty === false}
                 >
                   <IconRestore />
