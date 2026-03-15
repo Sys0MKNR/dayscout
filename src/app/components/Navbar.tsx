@@ -1,17 +1,10 @@
 import { ActionIcon, Flex, Group, Text, Tooltip } from '@mantine/core'
 import { IconArrowLeft, IconSettings } from '@tabler/icons-react'
 import type { ReactNode } from 'react'
-import {
-  Link,
-  type UIMatch,
-  useMatches,
-  useNavigate,
-  useParams,
-} from 'react-router'
+import { Link, type UIMatch, useMatches, useNavigate, useParams } from 'react-router'
 import { ReloadIcon } from './ReloadIcon'
 
 interface Handle {
-  // biome-ignore lint/suspicious/noExplicitAny: <really a waste of time to try to type this>
   crumb: (data: any, params: any) => ReactNode
 }
 
@@ -22,8 +15,7 @@ export function Navbar() {
   const currentMatch = matches[matches.length - 1]
 
   const crumb = currentMatch?.handle?.crumb || ''
-  const label =
-    typeof crumb === 'string' ? crumb : crumb(currentMatch.loaderData, params)
+  const label = typeof crumb === 'string' ? crumb : crumb(currentMatch.loaderData, params)
 
   const navigate = useNavigate()
 
@@ -44,7 +36,7 @@ export function Navbar() {
       >
         <ActionIcon
           style={{
-            visibility: currentMatch.id === 'overlays' ? 'hidden' : 'visible',
+            visibility: currentMatch.id === 'index' ? 'hidden' : 'visible',
           }}
           variant="filled"
           aria-label="Back"

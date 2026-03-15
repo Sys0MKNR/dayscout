@@ -14,11 +14,14 @@ export function ReloadIcon() {
         variant="filled"
         aria-label="Reload"
         onClick={() => reloadOverlays()}
+        // loading={snap.loading}
+        color={snap.error ? 'red' : undefined}
       >
         <IconRefresh
-          className={cx(classes.loading, {
-            [classes.error]: Boolean(snap.error),
-          })}
+
+        // className={cx(classes.loading, {
+        //   [classes.error]: Boolean(snap.error),
+        // })}
         />
       </ActionIcon>
     </Tooltip>

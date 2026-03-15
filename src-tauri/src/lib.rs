@@ -16,6 +16,7 @@ use crate::windows::get_or_create_window;
 mod api;
 mod cmd;
 mod config;
+mod overlay;
 mod task;
 mod tray;
 mod utils;
@@ -78,10 +79,10 @@ async fn load_overlays(app_handle: &AppHandle) -> Result<(), Error> {
             w.set_ignore_cursor_events(!o.interactive)?;
 
             match o.position {
-                config::PositionType::Preset => {
+                overlay::PositionType::Preset => {
                     w.move_window(o.get_preset_position()?)?;
                 }
-                config::PositionType::Custom => {
+                overlay::PositionType::Custom => {
                     let window_pos = w.inner_position()?;
                     let new_pos = PhysicalPosition {
                         x: window_pos.x + o.custom_position.x,
@@ -180,6 +181,7 @@ pub fn run() {
                 if window.label() != "main" {
                     return;
                 }
+
                 api.prevent_close();
                 window.hide().unwrap();
             }

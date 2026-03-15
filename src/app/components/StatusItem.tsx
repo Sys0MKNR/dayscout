@@ -1,10 +1,10 @@
 import { Checkbox, Group, NumberInput, Paper, Text } from '@mantine/core'
 import { type Control, Controller } from 'react-hook-form'
-import type { IOverlaySchema } from '../lib/types'
+import { Overlay, OverlayStatusItemName } from '../../lib/types'
 
 export interface StatusItemProps {
-  name: keyof IOverlaySchema['statusItems']
-  control: Control<IOverlaySchema>
+  name: OverlayStatusItemName
+  control: Control<Overlay>
 }
 
 export function StatusItem({ name, control }: StatusItemProps) {
@@ -15,9 +15,7 @@ export function StatusItem({ name, control }: StatusItemProps) {
           <Controller
             name={`statusItems.${name}.enabled`}
             control={control}
-            render={({ field }) => (
-              <Checkbox checked={field.value} onChange={field.onChange} />
-            )}
+            render={({ field }) => <Checkbox checked={field.value} onChange={field.onChange} />}
           />
           <Text size="lg">{name}</Text>
         </Group>
@@ -25,15 +23,7 @@ export function StatusItem({ name, control }: StatusItemProps) {
           name={`statusItems.${name}.size`}
           control={control}
           render={({ field }) => (
-            <NumberInput
-              label="Size"
-              {...field}
-              min={0}
-              max={100}
-              step={1}
-              size="xs"
-              w={64}
-            />
+            <NumberInput label="Size" {...field} min={0} max={100} step={1} size="xs" w={64} />
           )}
         />
       </Group>

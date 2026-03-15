@@ -23,12 +23,10 @@ export const WindowPositions = {
   'Tray Bottom Center': '14',
 }
 
-export const WindowPositionsOptions = Object.entries(WindowPositions).map(
-  ([key, value]) => ({
-    value: value,
-    label: key,
-  }),
-)
+export const WindowPositionsOptions = Object.entries(WindowPositions).map(([key, value]) => ({
+  value: value,
+  label: key,
+}))
 
 export const PositionTypes = ['Preset', 'Custom', 'Manual'] as const
 export type PositionType = (typeof PositionTypes)[number]
@@ -37,6 +35,9 @@ export interface OverlayStatusItem {
   enabled: boolean
   size: number
 }
+
+export const OverlayStatusItemNames = ['value', 'icon', 'delta', 'lastUpdated'] as const
+export type OverlayStatusItemName = (typeof OverlayStatusItemNames)[number]
 
 export interface Overlay {
   id: string

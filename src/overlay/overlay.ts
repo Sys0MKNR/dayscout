@@ -1,20 +1,20 @@
-import { initLogger } from './lib/utils'
+import { initLogger } from '../lib/utils'
 
 initLogger()
 
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import textfit from 'textfit'
 
-import './status.css'
+import './overlay.css'
 import { type Event, listen } from '@tauri-apps/api/event'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { settings } from './lib/settings'
-import type { Overlay, Status, StatusPayload } from './lib/types'
+import type { Overlay, Status, StatusPayload } from '../lib/types'
 
 dayjs.extend(relativeTime)
 
-import { DirectionMap } from './lib/directionMap'
+import { DirectionMap } from '../lib/directionMap'
+import { api } from '../lib/api'
 
 const root = document.getElementById('root') as HTMLDivElement
 const loader = document.getElementById('loader') as HTMLDivElement
@@ -27,9 +27,7 @@ const valueBoxIcon = document.getElementById('value-icon') as HTMLDivElement
 const deltaBox = document.getElementById('delta') as HTMLElement
 const deltaBoxText = document.getElementById('delta-text') as HTMLSpanElement
 const lastUpdatedBox = document.getElementById('last-updated') as HTMLDivElement
-const lastUpdatedBoxText = document.getElementById(
-  'last-updated-text',
-) as HTMLSpanElement
+const lastUpdatedBoxText = document.getElementById('last-updated-text') as HTMLSpanElement
 
 let overlay: Overlay | null = null
 let width = 0
@@ -59,7 +57,7 @@ async function main() {
 async function loadOverlay() {
   const w = await getCurrentWindow()
   const overlayId = w.label.split('_')[0]
-  const o = await settings.overlays.getOne(overlayId)
+  const o = await api.overlay.get(overlayId)
 
   console.debug('Loading overlay for label :', w.label, o)
 
@@ -76,9 +74,7 @@ async function updateLayout() {
 
   overlay = await loadOverlay()
 
-  const backgroundColor = overlay.transparent
-    ? 'transparent'
-    : overlay.colors.background
+  const backgroundColor = overlay.transparent ? 'transparent' : overlay.colors.background
 
   statusBox.classList.add('hidden-soft')
   loader.style.backgroundColor = backgroundColor

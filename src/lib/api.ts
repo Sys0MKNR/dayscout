@@ -1,35 +1,61 @@
 import { invoke } from '@tauri-apps/api/core'
 import type { Overlay, Settings } from './types'
+import { availableMonitors } from '@tauri-apps/api/window'
 
-export function getOverlays() {
+function getOverlays() {
   return invoke<Overlay[]>('get_overlays')
 }
 
-export function getOverlay(id: string) {
-  console.log('getOverlay called with id:', id)
+function getOverlay(id: string) {
   return invoke<Overlay>('get_overlay', { id })
 }
 
-export function setOverlay(overlay: Overlay) {
+function setOverlay(overlay: Overlay) {
   return invoke<Overlay[]>('set_overlay', { overlay })
 }
 
-export function setOverlayEnabled(id: string, enabled: boolean) {
+function setOverlayEnabled(id: string, enabled: boolean) {
   return invoke('set_overlay_enabled', { id, enabled })
 }
 
-export function deleteOverlay(id: string) {
+function deleteOverlay(id: string) {
   return invoke('delete_overlay', { id })
 }
 
-export function getFonts() {
+function getFonts() {
   return invoke<string[]>('get_fonts')
 }
 
-export function getSettings() {
+function getSettings() {
   return invoke<Settings>('get_settings')
 }
 
-export function setSettings(settings: Settings) {
+function setSettings(settings: Settings) {
   return invoke<void>('set_settings', { settings })
+}
+
+export async function loadAdditionalFormData() {
+  const monitors = (await availableMonitors()).map((m) => m.name).filter((m) => m)
+  const fonts = await getFonts()
+  return {
+    monitors,
+    fonts,
+  }
+}
+
+export const api = {
+  overlay: {
+    list: getOverlays,
+    get: getOverlay,
+    set: setOverlay,
+    setEnabled: setOverlayEnabled,
+    delete: deleteOverlay,
+  },
+  settings: {
+    get: getSettings,
+    set: setSettings,
+  },
+  additionalData: {
+    load: loadAdditionalFormData,
+  },
 }

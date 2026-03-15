@@ -1,13 +1,21 @@
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
+import { RouteObject, useNavigate } from 'react-router'
 import { v4 as uuidv4 } from 'uuid'
 import { OverlayForm } from '../../components/OverlayForm'
-import { setOverlay } from '../../lib/api'
-import type { Overlay } from '../../lib/types'
+
+import { api } from '../../../lib/api'
+import { Overlay } from '../../../lib/types'
+
+export const OverlayNewRoute = {
+  path: 'overlay/new',
+  handle: {
+    crumb: 'New Overlay',
+  },
+  element: <OverlayNewView />,
+  loader: api.additionalData.load,
+} satisfies RouteObject
 
 export function OverlayNewView() {
-  console.log('render OverlayNewView')
-
   const form = useForm<Overlay>({
     mode: 'onSubmit',
     defaultValues: {
@@ -68,19 +76,11 @@ export function OverlayNewView() {
   const navigate = useNavigate()
 
   const onSubmit = async (values: Overlay) => {
-    await setOverlay(values)
+    await api.overlay.set(values)
     navigate(`/overlay/${values.id}`, {
       replace: true,
       viewTransition: true,
     })
   }
-  return (
-    <OverlayForm
-      form={form}
-      saveAlwaysEnabled
-      onSubmit={onSubmit}
-      onReset={() => form.reset()}
-      onBack={() => navigate('/', { viewTransition: true })}
-    />
-  )
+  return <OverlayForm form={form} saveAlwaysEnabled onSubmit={onSubmit} />
 }

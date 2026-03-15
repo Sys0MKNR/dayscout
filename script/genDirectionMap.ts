@@ -29,9 +29,7 @@ for (const f of files) {
 
   const filePath = join(iconFolder, f)
   const content = await fs.readFile(filePath, 'utf-8')
-  const iconName = basename(f, '.svg').replace(/-([a-z])/g, (x) =>
-    x[1].toUpperCase(),
-  )
+  const iconName = basename(f, '.svg').replace(/-([a-z])/g, (x) => x[1].toUpperCase())
 
   const startIndex = content.indexOf('>')
   const endIndex = content.lastIndexOf('</svg>')

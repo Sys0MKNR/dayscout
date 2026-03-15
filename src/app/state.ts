@@ -11,8 +11,7 @@ export const reloadOverlays = async () => {
   try {
     await invoke('load_overlays')
   } catch (error) {
-    reloadOverlayState.error =
-      error instanceof Error ? error.message : String(error)
+    reloadOverlayState.error = error instanceof Error ? error.message : String(error)
     console.error('Error loading overlays:', reloadOverlayState.error)
   }
   reloadOverlayState.loading = false

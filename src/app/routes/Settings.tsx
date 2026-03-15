@@ -2,13 +2,26 @@ import { Button, Checkbox, Fieldset, Group, Stack } from '@mantine/core'
 import { appDataDir } from '@tauri-apps/api/path'
 import { openPath } from '@tauri-apps/plugin-opener'
 import { Controller, useForm } from 'react-hook-form'
-import { useLoaderData } from 'react-router'
-import { Form } from '../../components/Form'
-import { setSettings } from '../../lib/api'
+import { RouteObject, useLoaderData } from 'react-router'
+import { Form } from '../components/Form'
+import { api } from '../../lib/api'
 import type { Settings } from '../../lib/types'
 
-export function SettingsView() {
-  const { settings } = useLoaderData()
+export const SettingsRoute = {
+  path: 'settings',
+  handle: {
+    crumb: 'Settings',
+  },
+  element: <SettingsView />,
+  loader: async () => {
+    return {
+      settings: await api.settings.get(),
+    }
+  },
+} satisfies RouteObject
+
+function SettingsView() {
+  const { settings } = useLoaderData<typeof SettingsRoute.loader>()
 
   const form = useForm<Settings>({
     mode: 'onSubmit',
@@ -62,7 +75,7 @@ export function SettingsView() {
   // }
 
   return (
-    <Form form={form} onSubmit={setSettings}>
+    <Form form={form} onSubmit={api.settings.set}>
       <Fieldset legend="General">
         <Stack>
           <Controller
@@ -101,10 +114,7 @@ export function SettingsView() {
         </Stack>
       </Fieldset>
 
-      <Fieldset
-        legend="Advanced"
-        style={{ borderColor: 'var(--mantine-color-red-outline)' }}
-      >
+      <Fieldset legend="Advanced" style={{ borderColor: 'var(--mantine-color-red-outline)' }}>
         <Group>
           <Button
             variant="outline"

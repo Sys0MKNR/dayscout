@@ -6,7 +6,7 @@ use tokio::time::interval;
 
 use crate::{
     api::{extend_overlay_with_external_data, get_status, StatusPayload},
-    config::Overlay,
+    overlay::Overlay,
 };
 
 pub struct TaskManager {

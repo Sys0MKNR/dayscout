@@ -2,7 +2,7 @@ import { AppShell } from '@mantine/core'
 import { Outlet } from 'react-router'
 import { Navbar } from '../components/Navbar'
 
-export function HomeView() {
+export function Layout() {
   return (
     <AppShell header={{ height: 48 }} padding="md">
       <AppShell.Header>

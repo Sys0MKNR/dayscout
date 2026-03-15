@@ -17,13 +17,12 @@ import { Controller } from 'react-hook-form'
 import { useLoaderData } from 'react-router'
 import {
   type Overlay,
+  OverlayStatusItemNames,
   PositionTypes,
   WindowPositionsOptions,
-} from '../lib/types'
+} from '../../lib/types'
 import { Form, type FormProps } from './Form'
 import { StatusItem } from './StatusItem'
-
-const StatusItemNames = ['value', 'icon', 'delta', 'lastUpdated'] as const
 
 export function OverlayForm(props: FormProps<Overlay>) {
   const { form } = props
@@ -45,9 +44,7 @@ export function OverlayForm(props: FormProps<Overlay>) {
             <Controller
               name="id"
               control={control}
-              render={({ field }) => (
-                <TextInput disabled label="ID" {...field} />
-              )}
+              render={({ field }) => <TextInput disabled label="ID" {...field} />}
             />
             <Group>
               <Controller
@@ -82,11 +79,7 @@ export function OverlayForm(props: FormProps<Overlay>) {
                 name="allMonitors"
                 control={control}
                 render={({ field }) => (
-                  <Checkbox
-                    label="All Monitors"
-                    checked={field.value}
-                    onChange={field.onChange}
-                  />
+                  <Checkbox label="All Monitors" checked={field.value} onChange={field.onChange} />
                 )}
               />
               <Controller
@@ -122,11 +115,7 @@ export function OverlayForm(props: FormProps<Overlay>) {
               name="token"
               control={control}
               render={({ field }) => (
-                <TextInput
-                  label="Token"
-                  placeholder="Your API token"
-                  {...field}
-                />
+                <TextInput label="Token" placeholder="Your API token" {...field} />
               )}
             />
             <Controller
@@ -149,9 +138,7 @@ export function OverlayForm(props: FormProps<Overlay>) {
                 <Controller
                   name="thresholds.high"
                   control={control}
-                  render={({ field }) => (
-                    <NumberInput label="High" {...field} />
-                  )}
+                  render={({ field }) => <NumberInput label="High" {...field} />}
                   rules={{ max: 1000 }}
                 />
                 <Controller
@@ -163,17 +150,13 @@ export function OverlayForm(props: FormProps<Overlay>) {
                 <Controller
                   name="thresholds.targetBottom"
                   control={control}
-                  render={({ field }) => (
-                    <NumberInput label="Target Bottom" {...field} />
-                  )}
+                  render={({ field }) => <NumberInput label="Target Bottom" {...field} />}
                   rules={{ max: 1000 }}
                 />
                 <Controller
                   name="thresholds.targetTop"
                   control={control}
-                  render={({ field }) => (
-                    <NumberInput label="Target Top" {...field} />
-                  )}
+                  render={({ field }) => <NumberInput label="Target Top" {...field} />}
                   rules={{ max: 1000 }}
                 />
               </Group>
@@ -328,11 +311,7 @@ export function OverlayForm(props: FormProps<Overlay>) {
                   name="transparent"
                   control={control}
                   render={({ field }) => (
-                    <Checkbox
-                      label="Transparent"
-                      checked={field.value}
-                      onChange={field.onChange}
-                    />
+                    <Checkbox label="Transparent" checked={field.value} onChange={field.onChange} />
                   )}
                 />
               </Group>
@@ -343,11 +322,7 @@ export function OverlayForm(props: FormProps<Overlay>) {
                 name="interactive"
                 control={control}
                 render={({ field }) => (
-                  <Checkbox
-                    label="Interactive"
-                    checked={field.value}
-                    onChange={field.onChange}
-                  />
+                  <Checkbox label="Interactive" checked={field.value} onChange={field.onChange} />
                 )}
               />
             </Group>
@@ -422,7 +397,7 @@ export function OverlayForm(props: FormProps<Overlay>) {
         </Tabs.Panel>
         <Tabs.Panel value="items">
           <Flex gap={16} wrap="wrap" justify={'space-between'}>
-            {StatusItemNames.map((name) => (
+            {OverlayStatusItemNames.map((name) => (
               <StatusItem key={name} name={name} control={control} />
             ))}
           </Flex>

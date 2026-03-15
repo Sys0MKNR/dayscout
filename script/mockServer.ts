@@ -93,8 +93,7 @@ class Mock {
     if (oldStatusValue) {
       const newDeltaValue = newStatusValue - oldStatusValue
 
-      const display =
-        newDeltaValue >= 0 ? `+${newDeltaValue}` : newDeltaValue.toString()
+      const display = newDeltaValue >= 0 ? `+${newDeltaValue}` : newDeltaValue.toString()
 
       delta = {
         absolute: newDeltaValue,

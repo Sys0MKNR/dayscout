@@ -1,19 +1,7 @@
-import {
-  ActionIcon,
-  Box,
-  Fieldset,
-  Group,
-  LoadingOverlay,
-  Tooltip,
-} from '@mantine/core'
+import { ActionIcon, Box, Fieldset, Group, LoadingOverlay, Tooltip } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
-import {
-  IconArrowLeft,
-  IconDeviceFloppy,
-  IconRestore,
-  IconTrash,
-} from '@tabler/icons-react'
-import { useCallback } from 'react'
+import { IconArrowLeft, IconDeviceFloppy, IconRestore, IconTrash } from '@tabler/icons-react'
+import { useCallback, useState } from 'react'
 
 import type { FieldValues, UseFormReturn } from 'react-hook-form'
 
@@ -23,28 +11,19 @@ export interface FormProps<T extends FieldValues> {
   legend?: string
   saveAlwaysEnabled?: boolean
   onSubmit: (values: T) => Promise<void>
-  onBack?: () => void
   onRemove?: () => void
   onReset?: () => void
-  loading?: boolean
-  saving?: boolean
 }
 
 export function Form<T extends FieldValues>(props: FormProps<T>) {
-  console.log('render Form')
-
   const {
     form,
     legend,
     saveAlwaysEnabled = false,
-    onBack,
     onRemove,
-    onReset,
-    loading = false,
-    saving = false,
+    onReset = () => form.reset(),
+    onSubmit: _onSubmit,
   } = props
-
-  console.log(form.formState.errors)
 
   const onSubmit = useCallback(
     async (values: T) => {
@@ -56,8 +35,8 @@ export function Form<T extends FieldValues>(props: FormProps<T>) {
         withCloseButton: false,
       })
       try {
-        await props.onSubmit(values)
-      } catch (e) {
+        await _onSubmit(values)
+      } catch (e: any) {
         console.error('Error saving form:', e)
         notifications.update({
           id,
@@ -81,28 +60,27 @@ export function Form<T extends FieldValues>(props: FormProps<T>) {
         withCloseButton: true,
       })
     },
-    [props.onSubmit],
+    [_onSubmit],
   )
 
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
       style={{
-        maxHeight:
-          'calc(100vh - var(--app-shell-header-offset) - var(--app-shell-padding) * 2)',
+        maxHeight: 'calc(100vh - var(--app-shell-header-offset) - var(--app-shell-padding) * 2)',
         overflow: 'auto',
       }}
       autoComplete="off"
     >
       <Box pos="relative">
-        <LoadingOverlay
+        {/* <LoadingOverlay
           transitionProps={{ transition: 'fade', duration: 300 }}
           visible={loading}
           zIndex={1000}
           overlayProps={{ radius: 'sm', blur: 2 }}
-        />
+        /> */}
         <Fieldset
-          disabled={saving}
+          // disabled={saving}
           style={{
             background: 'var(--mantine-primary-color-filled)',
             position: 'fixed',
@@ -118,17 +96,6 @@ export function Form<T extends FieldValues>(props: FormProps<T>) {
               justifyContent: 'flex-end',
             }}
           >
-            {onBack && (
-              <Tooltip
-                label="Back"
-                color="var(--mantine-primary-color-filled)"
-                onClick={onBack}
-              >
-                <ActionIcon aria-label="Back" variant="filled">
-                  <IconArrowLeft />
-                </ActionIcon>
-              </Tooltip>
-            )}
             {onRemove && (
               <Tooltip label="Delete" onClick={onRemove}>
                 <ActionIcon radius={'xs'} aria-label="Delete" variant="filled">
@@ -137,15 +104,12 @@ export function Form<T extends FieldValues>(props: FormProps<T>) {
               </Tooltip>
             )}
             {onReset && (
-              <Tooltip
-                label="Reset"
-                color="var(--mantine-primary-color-filled)"
-                onClick={onReset}
-              >
+              <Tooltip label="Reset" color="var(--mantine-primary-color-filled)" onClick={onReset}>
                 <ActionIcon
                   aria-label="Reset"
                   variant="filled"
-                  disabled={form.formState.isDirty === false || saving}
+                  // disabled={form.formState.isDirty === false || saving}
+                  disabled={form.formState.isDirty === false}
                 >
                   <IconRestore />
                 </ActionIcon>
@@ -157,9 +121,7 @@ export function Form<T extends FieldValues>(props: FormProps<T>) {
                 aria-label="Save"
                 type="submit"
                 variant="filled"
-                // disabled={
-                //   saving || (!saveAlwaysEnabled && form.isDirty() === false)
-                // }
+                disabled={!saveAlwaysEnabled && !form.formState.isDirty}
               >
                 <IconDeviceFloppy />
               </ActionIcon>
